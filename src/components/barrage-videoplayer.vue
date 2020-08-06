@@ -400,6 +400,10 @@ export default {
 .player-area {
   position: relative;
   display: inline-block;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 .cursor-pointer {
   cursor: pointer;
@@ -413,6 +417,7 @@ export default {
 }
 .player-video {
   outline: none;
+  vertical-align: middle;
 }
 .player-loading {
   position: absolute;
@@ -467,8 +472,8 @@ export default {
   opacity: 1;
   position: relative;
   display: block;
-  background: rgb(26, 26, 26, 0.4);
   transition: visibility 0.3s, opacity 0.3s;
+  background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.6));
 }
 .player-controls-container:hover .player-controls {
   visibility: visible;
@@ -499,9 +504,6 @@ export default {
 .player-controls-btn .player-controls-icon {
   height: 22px;
   transition: height 0.3s;
-}
-.player-fullscreen .player-controls-btn .player-controls-icon {
-  /* height: 44px; */
 }
 .player-controls-btn svg path {
   fill: #dddddd;

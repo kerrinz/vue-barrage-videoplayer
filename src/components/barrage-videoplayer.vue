@@ -18,10 +18,10 @@
     >
       <source :src="video_src" />
     </video>
-    <div v-show="is_show_loading" class="player-loading">
+    <div v-show="is_show_loading" class="player-loading" @click="video_dom.focus()">
       <img src="../assets/images/loading.svg" />
     </div>
-    <div class="player-controls-container">
+    <div class="player-controls-container" @click="video_dom.focus()">
       <div v-show="is_show_volume_hint" class="player-volumeHint">
         <span class="player-volumeHint-text">当前音量:{{volume_percent}}%</span>
       </div>

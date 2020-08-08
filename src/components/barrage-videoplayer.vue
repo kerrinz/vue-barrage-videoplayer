@@ -95,6 +95,25 @@
             <div class="player-time">{{ current_time_format }} / {{ full_time_format }}</div>
           </div>
           <div class="player-controls-bottom-right">
+            <div class="player-controls-btn cursor-pointer btn-speed">
+              <span>{{current_speed == '1.0' ? '倍速' : current_speed+'x'}}</span>
+              <div class="speed-control">
+                <ul class="speed-control-list">
+                  <li
+                    v-for="item in speed_list"
+                    :key="item"
+                    @click="changeSpeed"
+                    :data-value="item"
+                    :class="{'current': current_speed == item}"
+                  >{{ item }}x</li>
+                  <!-- <li @click="changeSpeed" data-value="1.5">1.5x</li>
+                  <li @click="changeSpeed" data-value="1" class="current">1.0x</li>
+                  <li @click="changeSpeed" data-value="0.75">0.75x</li>
+                  <li @click="changeSpeed" data-value="0.5">0.5x</li>
+                  <li @click="changeSpeed" data-value="0.25">0.25x</li>-->
+                </ul>
+              </div>
+            </div>
             <div class="player-controls-btn btn-volume">
               <div class="cursor-pointer" type="buttom" @click="showVolumeControl">
                 <svg
@@ -167,6 +186,12 @@ export default {
       type: String,
       default: "auto",
     },
+    speed_list: {
+      type: Array,
+      default: function () {
+        return ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"];
+      },
+    },
   },
   data() {
     return {
@@ -181,6 +206,7 @@ export default {
       is_show_volume_hint: false, // 是否显示音量提示条（键盘触发）
       timeout_volume_hint: 0, // 音量提示条多久ms后隐藏
       timeout_controls_hint: 0, // 控制面板多久ms后隐藏
+      current_speed: '1.0', // 当前倍速
       volume_percent: 100, // 当前音量百分比（0-100），仅用于文字显示
       current_volume: 1, // 当前音量（0-1），同时作用于当前音量条的长度
       current_progress: 0, // 当前播放进度（0-1）。同时作用于当前进度条的长度
@@ -332,6 +358,15 @@ export default {
         this.current_volume = newVolume;
       }
     },
+    // 视频倍速播放
+    changeSpeed(e) {
+      // 获取选择的倍速
+      let value = e.currentTarget.dataset.value;
+      // 应用视频倍速
+      this.video_dom.playbackRate = value;
+      // 标记变更后的倍速，用于显示文字
+      this.current_speed = value;
+    },
     //点击音量条后更新音量（value范围：0-1）
     updateVolumeByClickBar(value) {
       this.video_dom.volume = value;
@@ -475,7 +510,7 @@ export default {
   position: relative;
   display: block;
   transition: visibility 0.3s, opacity 0.3s;
-  background-image: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.6));
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
 }
 .player-controls-container:hover .player-controls {
   visibility: visible;
@@ -495,13 +530,15 @@ export default {
   display: inline-flex;
 }
 .player-controls-bottom-right {
+  display: inline-flex;
   padding: 0.6rem 0.4rem;
 }
 .player-controls-btn {
   position: relative;
   display: inline-block;
-  color: #fff;
+  color: #e5e5e5;
   padding: 0 0.4rem;
+  transition: color 0.3s;
 }
 .player-controls-btn .player-controls-icon {
   height: 22px;
@@ -514,29 +551,70 @@ export default {
 .player-controls-btn:hover svg > path {
   fill: #ffffff;
 }
+.player-controls-btn:hover {
+  color: #fff;
+}
 .player-time {
   display: inline-block;
   color: #e5e5e5;
+}
+.btn-speed:hover .speed-control {
+  visibility: visible;
+}
+.speed-control {
+  visibility: hidden;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  padding-bottom: 24px;
+  transition: visibility 0.3s;
+  transform: translate(-50%, -100%);
+}
+.speed-control .speed-control-list {
+  list-style: none;
+  color: #e5e5e5;
+  width: 80px;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  border-radius: 4px;
+  background: rgba(21, 21, 21, 0.8);
+}
+.speed-control .speed-control-list li {
+  position: relative;
+  display: block;
+  height: 35px;
+  line-height: 35px;
+}
+.speed-control .speed-control-list li:hover {
+  color: #fff;
+  background: rgba(99, 99, 99, 0.8);
+}
+.speed-control .speed-control-list li.current {
+  color: #00d8d9;
+}
+.btn-volume:hover .volume-control {
+  visibility: visible;
 }
 .volume-control {
   visibility: hidden;
   position: absolute;
   top: 0;
-  padding: 24px 0;
-  transform: translate(-10%, -100%);
+  left: 50%;
+  padding: 24px 10px;
+  transition: visibility 0.3s;
+  transform: translate(-50%, -100%);
 }
 .volume-control-wrap {
   display: flex;
   text-align: center;
   flex-direction: column;
+  margin: auto;
   width: 45px;
   height: 120px;
   padding: 0.6rem 0 1rem;
   background: rgba(21, 21, 21, 0.8);
   border-radius: 4px;
-}
-.btn-volume:hover .volume-control {
-  visibility: visible;
 }
 .volume-text {
   color: #fff;

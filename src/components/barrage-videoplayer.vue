@@ -425,13 +425,15 @@ export default {
   bottom: 50%;
   left: 50%;
   right: 50%;
-  width: 100px;
-  height: 100px;
+  width: 80px;
+  height: 80px;
   /* background: rgb(255, 255, 255, 0.8); */
   transform: translate(-50%, -50%);
 }
 .player-loading img {
   fill: #fff;
+  width: inherit;
+  height: inherit;
 }
 .player-paused-state {
   position: absolute;
@@ -506,7 +508,7 @@ export default {
   transition: height 0.3s;
 }
 .player-controls-btn svg path {
-  fill: #dddddd;
+  fill: #e5e5e5;
   transition: fill 0.2s;
 }
 .player-controls-btn:hover svg > path {
@@ -514,7 +516,7 @@ export default {
 }
 .player-time {
   display: inline-block;
-  color: #dddddd;
+  color: #e5e5e5;
 }
 .volume-control {
   visibility: hidden;
@@ -543,6 +545,12 @@ export default {
 @media (device-width: 100vw) {
   .player-controls-btn .player-controls-icon {
     height: 26px;
+  }
+}
+@media (min-width: 1000px) {
+  .player-loading {
+    width: 100px;
+    height: 100px;
   }
 }
 </style>

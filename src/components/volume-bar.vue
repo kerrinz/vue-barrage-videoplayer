@@ -8,7 +8,7 @@
   <div
     class="volume-bar"
     :style="{width: '100%', height: height}"
-    @mousedown.stop="down"
+    @mousedown.left.stop="down"
     @mousemove.stop="move"
     @mouseup.stop="up"
   >

@@ -2,6 +2,7 @@
   <div
     id="player-area"
     :class="{'player-area': true, 'player-fullscreen': is_fullscreen, 'cursor-lasting-static': is_cursor_static}"
+    @contextmenu.prevent="mouseclick('右')"
   >
     <video
       id="player-video"
@@ -13,6 +14,7 @@
       @keydown.right="forwardCurrentTime"
       @keydown.up="increaseVolume"
       @keydown.down="lowerVolume"
+      @keydown.esc.stop="toggleFullScreen"
       tabindex="0"
       :width="width"
     >
@@ -106,11 +108,6 @@
                     :data-value="item"
                     :class="{'current': current_speed == item}"
                   >{{ item }}x</li>
-                  <!-- <li @click="changeSpeed" data-value="1.5">1.5x</li>
-                  <li @click="changeSpeed" data-value="1" class="current">1.0x</li>
-                  <li @click="changeSpeed" data-value="0.75">0.75x</li>
-                  <li @click="changeSpeed" data-value="0.5">0.5x</li>
-                  <li @click="changeSpeed" data-value="0.25">0.25x</li>-->
                 </ul>
               </div>
             </div>
@@ -146,8 +143,9 @@
             </div>
             <div class="player-controls-btn cursor-pointer" @click="toggleFullScreen">
               <svg
-                t="1596553111831"
+                v-show="!is_fullscreen"
                 class="player-controls-icon"
+                t="1596553111831"
                 viewBox="0 0 1024 1024"
                 version="1.1"
                 xmlns="http://www.w3.org/2000/svg"
@@ -166,6 +164,31 @@
                   fill="#ffffff"
                 />
               </svg>
+              <svg
+                v-show="is_fullscreen"
+                t="1596958879235"
+                class="player-controls-icon"
+                viewBox="0 0 1024 1024"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                p-id="2734"
+                width="32"
+                height="32"
+              >
+                <path
+                  d="M0.739556 233.130667a232.391111 232.391111 0 0 1 232.391111-232.391111h557.738666a232.391111 232.391111 0 0 1 232.391111 232.391111v557.738666a232.391111 232.391111 0 0 1-232.391111 232.391111H233.130667a232.391111 232.391111 0 0 1-232.391111-232.391111V233.130667z m232.391111-139.434667a139.434667 139.434667 0 0 0-139.434667 139.434667v557.738666a139.434667 139.434667 0 0 0 139.434667 139.434667h557.738666a139.434667 139.434667 0 0 0 139.434667-139.434667V233.130667a139.434667 139.434667 0 0 0-139.434667-139.434667H233.130667z"
+                  p-id="2735"
+                  fill="#ffffff"
+                />
+                <path
+                  d="M601.088 186.652444c25.685333 0 46.506667 20.792889 46.506667 46.478223v96.796444c0 25.685333 20.792889 46.478222 46.478222 46.478222h96.796444a46.478222 46.478222 0 1 1 0 92.984889h-96.796444a139.434667 139.434667 0 0 1-139.463111-139.463111V233.130667c0-25.685333 20.821333-46.478222 46.478222-46.478223z m-414.435556 414.435556c0-25.656889 20.792889-46.478222 46.478223-46.478222h96.796444a139.434667 139.434667 0 0 1 139.463111 139.463111v96.796444a46.478222 46.478222 0 0 1-92.984889 0v-96.796444c0-25.685333-20.792889-46.478222-46.478222-46.478222H233.130667a46.478222 46.478222 0 0 1-46.478223-46.506667z"
+                  p-id="2736"
+                  fill="#ffffff"
+                />
+              </svg>
+              <div
+                class="player-controls-btn-hint btn-fullscreen-hint"
+              >{{is_fullscreen ? '退出全屏' : '进入全屏'}}</div>
             </div>
           </div>
         </div>
@@ -206,7 +229,7 @@ export default {
       is_show_volume_hint: false, // 是否显示音量提示条（键盘触发）
       timeout_volume_hint: 0, // 音量提示条多久ms后隐藏
       timeout_controls_hint: 0, // 控制面板多久ms后隐藏
-      current_speed: '1.0', // 当前倍速
+      current_speed: "1.0", // 当前倍速
       volume_percent: 100, // 当前音量百分比（0-100），仅用于文字显示
       current_volume: 1, // 当前音量（0-1），同时作用于当前音量条的长度
       current_progress: 0, // 当前播放进度（0-1）。同时作用于当前进度条的长度
@@ -265,6 +288,10 @@ export default {
       this.is_cursor_static = false;
       this.timeout_controls_hint = 2000;
     });
+    // 监听全屏事件的变化，保存数据
+    window.addEventListener('fullscreenchange', () => {
+      this.is_fullscreen = this.isFullScreen();
+    })
   },
   methods: {
     //切换播放状态
@@ -553,6 +580,26 @@ export default {
 }
 .player-controls-btn:hover {
   color: #fff;
+}
+.player-controls-btn:hover .player-controls-btn-hint {
+  visibility: visible;
+  opacity: 1;
+}
+.player-controls-btn-hint {
+  visibility: hidden;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  white-space: nowrap;
+  padding: 0.4rem 0.6rem;
+  border-radius: 4px;
+  background: rgb(21, 21, 21, 0.8);
+  transition: opacity 0.3s, visibility 0s;
+  transform: translate(-50%, -200%);
+}
+.btn-fullscreen-hint {
+  margin-left: -16px;
 }
 .player-time {
   display: inline-block;

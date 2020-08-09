@@ -8,7 +8,7 @@
   <div
     class="progress-bar"
     :style="{width: width}"
-    @mousedown="down"
+    @mousedown.left="down"
     @mousemove="move"
     @mouseup="up"
   >

@@ -4,6 +4,7 @@
     :class="{'player-area': true, 'player-fullscreen': is_fullscreen, 'cursor-lasting-static': is_cursor_static}"
     @contextmenu.prevent="mouseclick('右')"
   >
+    <!-- 视频主体 -->
     <video
       id="player-video"
       class="player-video cursor-pointer"
@@ -17,12 +18,17 @@
       @keydown.esc.stop="toggleFullScreen"
       tabindex="0"
       :width="width"
+      :height="height"
     >
-      <source :src="video_src" />
+      <source :src="src" />
     </video>
+    <!-- 弹幕 -->
+    <playerBarrageScreen :video_dom="video_dom" :barrage_list="barrage_list" :barrage_timeline_start="barrage_timeline_start" :is_playing="is_playing"/>
+    <!-- 加载动画 -->
     <div v-show="is_show_loading" class="player-loading" @click="video_dom.focus()">
       <img src="../assets/images/loading.svg" />
     </div>
+    <!-- 控制栏 -->
     <div class="player-controls-container" @click="video_dom.focus()">
       <div v-show="is_show_volume_hint" class="player-volumeHint">
         <span class="player-volumeHint-text">当前音量:{{volume_percent}}%</span>
@@ -200,12 +206,17 @@
 <script>
 import volumeBar from "./volume-bar.vue";
 import progressBar from "./progress-bar.vue";
+import playerBarrageScreen from "./player-barrage-screen.vue";
 
 export default {
   name: "barrage-videoplayer",
-  components: { volumeBar, progressBar },
+  components: { volumeBar, progressBar, playerBarrageScreen },
   props: {
     width: {
+      type: String,
+      default: "auto",
+    },
+    height: {
       type: String,
       default: "auto",
     },
@@ -215,10 +226,20 @@ export default {
         return ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"];
       },
     },
+    // 视频链接
+    src: {
+      type: String,
+      default: null,
+    },
+    barrage_list: {
+      type: Array,
+      default: function () {
+        return [];
+      },
+    },
   },
   data() {
     return {
-      video_src: "https://recomi.site/files/videos/output.mkv", // 视频链接
       video_dom: null, //视频dom
       is_fullscreen: false, // 是否处于全屏模式
       is_cursor_static: false, // 鼠标是否长时间静止不动
@@ -235,6 +256,7 @@ export default {
       current_progress: 0, // 当前播放进度（0-1）。同时作用于当前进度条的长度
       current_time_format: "00:00", // 当前播放进度的文字
       full_time_format: "00:00", // 视频总长度的文字
+      barrage_timeline_start: 0, // 弹幕时间轴的起始时间点（手动调整进度条触发更新）
     };
   },
   created() {},
@@ -289,9 +311,9 @@ export default {
       this.timeout_controls_hint = 2000;
     });
     // 监听全屏事件的变化，保存数据
-    window.addEventListener('fullscreenchange', () => {
+    window.addEventListener("fullscreenchange", () => {
       this.is_fullscreen = this.isFullScreen();
-    })
+    });
   },
   methods: {
     //切换播放状态
@@ -333,12 +355,14 @@ export default {
     forwardCurrentTime() {
       let newCurrentTime = this.video_dom.currentTime + 5;
       this.video_dom.currentTime = newCurrentTime;
+      this.barrage_timeline_start = newCurrentTime;
       this.updateProgressBySetTime(newCurrentTime);
     },
     //后退视频播放进度
     backwardCurrentTime() {
       let newCurrentTime = this.video_dom.currentTime - 5;
       this.video_dom.currentTime = newCurrentTime;
+      this.barrage_timeline_start = newCurrentTime;
       this.updateProgressBySetTime(newCurrentTime);
     },
     //获取鼠标是否按下了进度条
@@ -349,7 +373,9 @@ export default {
     updateProgressByClickBar(value) {
       let duration = this.video_dom.duration;
       this.current_progress = value;
-      this.video_dom.currentTime = Math.round(value * duration);
+      let new_current_time = Math.round(value * duration);
+      this.barrage_timeline_start = new_current_time;
+      this.video_dom.currentTime = new_current_time;
       console.log(value);
       console.log("now duration:" + Math.round(value * duration));
     },
@@ -454,6 +480,10 @@ export default {
         this.is_playing = false;
       }
     },
+    src: function () {
+      // 当视频地址变更时，重载视频
+      this.video_dom.load();
+    },
   },
 };
 </script>
@@ -480,6 +510,7 @@ export default {
 .player-video {
   outline: none;
   vertical-align: middle;
+  object-fit: contain;
 }
 .player-loading {
   position: absolute;

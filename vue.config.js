@@ -24,16 +24,21 @@ module.exports = {
 */
     port: 8080,
     proxy: {
+      '/api_bilibili': {
+        target: 'https://api.bilibili.com',
+        secure: true,
+        ws: false,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api_bilibili': '/'
+        }
+      },
       '/': {
         target: 'https://recomi.site',
         secure: true,
         ws: false,
         changeOrigin: true
-        // ,
-        // pathRewrite: {
-        //   '^/api': '/'
-        // }
-      }
+      },
     },
   },
 }

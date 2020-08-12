@@ -16,6 +16,8 @@ module.exports = {
       .set('@', resolve('src'))
   },
   devServer: {
+    // 关闭host检查
+    disableHostCheck: true,
 /*
     overlay: {
       warnings: true,

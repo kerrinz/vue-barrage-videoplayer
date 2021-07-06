@@ -7,7 +7,6 @@
   <div
     id="player-area"
     :class="{'player-area': true, 'player-fullscreen': is_fullscreen, 'cursor-lasting-static': is_cursor_static}"
-    @contextmenu.prevent="mouseclick('右')"
   >
     <!-- 视频主体 -->
     <video
@@ -29,9 +28,7 @@
     </video>
     <!-- 封面图 -->
     <div v-if="cover!=null && is_show_cover" class="player-cover">
-      <img :src="cover" 
-      :width="width"
-      :height="height"/>
+      <img :src="cover" :width="width" :height="height"/>
     </div>
     <!-- 弹幕 -->
     <playerBarrageScreen v-if="barrage_list.length > 0" :video_dom="video_dom" :barrage_list="barrage_list" :barrage_timeline_start="barrage_timeline_start" :is_playing="is_playing"/>
@@ -229,11 +226,11 @@ export default {
     },
     width: {
       type: String,
-      default: "auto",
+      default: "100%",
     },
     height: {
       type: String,
-      default: "auto",
+      default: "100%",
     },
     // 倍速列表
     speed_list: {

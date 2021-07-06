@@ -88,7 +88,7 @@ export default {
     },
     up() {
       this.is_click_bar = false;
-      console.log("当前音量：" + this.current_volume * 100 + "%");
+      // console.log("当前音量：" + this.current_volume * 100 + "%");
     },
   },
 };

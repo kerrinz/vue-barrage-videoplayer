@@ -1,3 +1,8 @@
+/**
+  传入参数（props）
+  必填项：name, src, 
+  可选项：width, height, speed_list, barrage_list
+ */
 <template>
   <div
     id="player-area"
@@ -214,7 +219,7 @@ export default {
   props: {
     // 每个播放器应使用不同的name，用于同时存在多个视频播放器的情况下区分事件
     name: {
-      type: String,
+      // type: String,
     },
     width: {
       type: String,
@@ -236,6 +241,7 @@ export default {
       type: String,
       default: null,
     },
+    // 弹幕列表
     barrage_list: {
       type: Array,
       default: function () {
@@ -381,8 +387,8 @@ export default {
       let new_current_time = Math.round(value * duration);
       this.barrage_timeline_start = new_current_time;
       this.video_dom.currentTime = new_current_time;
-      console.log(value);
-      console.log("now duration:" + Math.round(value * duration));
+      // console.log(value);
+      // console.log("now duration:" + Math.round(value * duration));
     },
     //通过新的播放时间更新视频播放进度
     updateProgressBySetTime(newCurrentTime) {

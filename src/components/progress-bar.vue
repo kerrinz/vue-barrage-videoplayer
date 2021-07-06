@@ -70,15 +70,17 @@ export default {
       // 计算调整后的当前进度条的长度
       this.current_width_px = e.clientX - init_clientX;
       // 设置当前的播放进度（同时作用于当前进度条的样式）
-      this.current_progress =
-        (e.clientX - init_clientX) / this.dom_full.clientWidth;
+        let current_progress =
+          (e.clientX - init_clientX) / this.dom_full.clientWidth;
+        this.$emit("updateProgress", current_progress);
     },
     move(e) {
       if (this.is_mousedown_progress) {
         let init_clientX = this.dom_full.getBoundingClientRect().left;
         this.current_width_px = e.clientX - init_clientX;
-        this.current_progress =
+        let current_progress =
           (e.clientX - init_clientX) / this.dom_full.clientWidth;
+        this.$emit("updateProgress", current_progress);
       }
     },
     up() {

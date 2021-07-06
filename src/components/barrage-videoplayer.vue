@@ -27,8 +27,14 @@
     >
       <source :src="src" />
     </video>
+    <!-- 封面图 -->
+    <div v-if="cover!=null && is_show_cover" class="player-cover">
+      <img :src="cover" 
+      :width="width"
+      :height="height"/>
+    </div>
     <!-- 弹幕 -->
-    <playerBarrageScreen :video_dom="video_dom" :barrage_list="barrage_list" :barrage_timeline_start="barrage_timeline_start" :is_playing="is_playing"/>
+    <playerBarrageScreen v-if="barrage_list.length > 0" :video_dom="video_dom" :barrage_list="barrage_list" :barrage_timeline_start="barrage_timeline_start" :is_playing="is_playing"/>
     <!-- 加载动画 -->
     <div v-show="is_show_loading" class="player-loading" @click="video_dom.focus()">
       <img src="../assets/images/loading.svg" />
@@ -241,6 +247,11 @@ export default {
       type: String,
       default: null,
     },
+    // 封面图的链接
+    cover: {
+      type: String,
+      default: null,
+    },
     // 弹幕列表
     barrage_list: {
       type: Array,
@@ -252,6 +263,7 @@ export default {
   data() {
     return {
       video_dom: null, //视频dom
+      is_show_cover: true, // 是否显示封面
       is_fullscreen: false, // 是否处于全屏模式
       is_cursor_static: false, // 鼠标是否长时间静止不动
       is_mousedown_progress: false, // 鼠标是否按下了进度条（并未松开）
@@ -336,6 +348,7 @@ export default {
         this.video_dom.pause();
         this.is_playing = false;
       }
+      this.is_show_cover = false;
     },
     //更新视频进度的文字显示
     updateProgressText() {
@@ -522,6 +535,15 @@ export default {
   outline: none;
   vertical-align: middle;
   object-fit: contain;
+}
+.player-cover {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 .player-loading {
   position: absolute;

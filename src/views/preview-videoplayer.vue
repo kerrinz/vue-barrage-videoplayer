@@ -1,7 +1,15 @@
 <template>
   <div class="container">
     <div class="video-wrap" v-for="n in 2" :key="n">
-      <barrageVideoplayer :name="n" :src="video_src" :barrage_list="barrage_list" width="100%" height="100%"></barrageVideoplayer>
+      <!-- 参考用法；有些参数可不选，传参详见barrage-videoplayer.vue文件 -->
+      <barrageVideoplayer
+        :name="n"
+        :src="video_src"
+        :cover="cover"
+        :barrage_list="barrage_list"
+        width="100%"
+        height="100%"
+      ></barrageVideoplayer>
     </div>
     <div class="video-src">{{ video_src }}</div>
     <div class="upload-btn">
@@ -21,12 +29,14 @@ export default {
   },
   data() {
     return {
-      video_src: "https://recomi.site/files/videos/output.mp4",
-      barrage_src: "/api_bilibili/x/v1/dm/list.so?oid=131068",
-      barrage_list: [],
+      video_src: "https://recomi.site/files/videos/output.mp4", // 视频链接
+      cover: "https://recomi.site/files/images/babala10.png", // 封面图的链接
+      barrage_src: "/api_bilibili/x/v1/dm/list.so?oid=131068", // 弹幕获取来源
+      barrage_list: [], // 弹幕列表
     };
   },
   created() {
+    // 获取弹幕列表
     axios({
       method: "get",
       url: this.barrage_src,

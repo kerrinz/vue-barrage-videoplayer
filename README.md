@@ -16,7 +16,7 @@ A vue component of video player (The barrage is in future). Only applies to PC w
 - Support barrage, websocket live, support mobile, and more...
 
 ### 更新历史：
-- 0.1.1 增加了对同时使用多个播放器的支持
+- 0.1.1 增加了对同时使用多个播放器的支持，以及封面图
 
 ### Updated history：
 - none

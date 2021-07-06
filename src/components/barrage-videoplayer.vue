@@ -5,7 +5,7 @@
  */
 <template>
   <div
-    id="player-area"
+    :id="'player-area' + name"
     :class="{'player-area': true, 'player-fullscreen': is_fullscreen, 'cursor-lasting-static': is_cursor_static}"
   >
     <!-- 视频主体 -->
@@ -452,7 +452,7 @@ export default {
     },
     //切换“全屏”和“非全屏”模式
     toggleFullScreen() {
-      let element = document.getElementById("player-area");
+      let element = document.getElementById("player-area" + this.name);
       if (!this.isFullScreen()) {
         if (element.requestFullscreen) {
           element.requestFullscreen();

@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div class="video-wrap">
-      <barrageVideoplayer :src="video_src" :barrage_list="barrage_list" width="100%" height="100%"></barrageVideoplayer>
+    <div class="video-wrap" v-for="n in 1" :key="n">
+      <barrageVideoplayer :name="n" :src="video_src" :barrage_list="barrage_list" width="100%" height="100%"></barrageVideoplayer>
     </div>
     <div class="video-src">{{ video_src }}</div>
     <div class="upload-btn">

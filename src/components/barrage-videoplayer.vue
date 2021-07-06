@@ -6,7 +6,7 @@
   >
     <!-- 视频主体 -->
     <video
-      id="player-video"
+      :id="name"
       class="player-video cursor-pointer"
       @click="togglePlayStatus"
       @keydown.f="toggleFullScreen"
@@ -212,6 +212,10 @@ export default {
   name: "barrage-videoplayer",
   components: { volumeBar, progressBar, playerBarrageScreen },
   props: {
+    // 每个播放器应使用不同的name，用于同时存在多个视频播放器的情况下区分事件
+    name: {
+      type: String,
+    },
     width: {
       type: String,
       default: "auto",
@@ -220,6 +224,7 @@ export default {
       type: String,
       default: "auto",
     },
+    // 倍速列表
     speed_list: {
       type: Array,
       default: function () {
@@ -261,7 +266,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.video_dom = document.getElementById("player-video");
+    this.video_dom = document.getElementById(this.name);
     this.video_dom.focus();
     setInterval(() => {
       // 定时更新进度条
@@ -550,7 +555,7 @@ export default {
   position: absolute;
   top: 0;
   left: 12px;
-  pointer-events: ;
+  pointer-events: none;
   transform: translate(0, -100%);
   border-radius: 4px;
   background: rgb(0, 0, 0, 0.8);

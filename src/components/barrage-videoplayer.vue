@@ -33,11 +33,11 @@
     <!-- 弹幕 -->
     <playerBarrageScreen v-if="barrage_list.length > 0" :video_dom="video_dom" :barrage_list="barrage_list" :barrage_timeline_start="barrage_timeline_start" :is_playing="is_playing"/>
     <!-- 加载动画 -->
-    <div v-show="is_show_loading" class="player-loading" @click="video_dom.focus()">
+    <div v-show="is_show_loading" class="player-loading" @click="video_dom.focus({preventScroll: true})">
       <img src="../assets/images/loading.svg" />
     </div>
     <!-- 控制栏 -->
-    <div class="player-controls-container" @click="video_dom.focus()">
+    <div class="player-controls-container" @click="video_dom.focus({preventScroll: true})">
       <div v-show="is_show_volume_hint" class="player-volumeHint">
         <span class="player-volumeHint-text">当前音量:{{volume_percent}}%</span>
       </div>
@@ -282,7 +282,7 @@ export default {
   created() {},
   mounted() {
     this.video_dom = document.getElementById(this.name);
-    this.video_dom.focus();
+    this.video_dom.focus({preventScroll: true});
     setInterval(() => {
       // 定时更新进度条
       if (this.is_playing && !this.is_mousedown_progress) {

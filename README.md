@@ -2,24 +2,22 @@
 
 ## vue-barrage-videoplayer / vue-弹幕视频播放器
 
-> 一个基于Vue的视频播放器组件（弹幕还没加上），仅适用于PC Web。\
+> 一个基于Vue的视频播放器组件（弹幕未开发完），仅适配PC Web。\
 A vue component of video player (The barrage is in future). Only applies to PC web.
 
-### 预览示例：[点击跳转预览](https://recomi.site/files/works/barrage-video-player/)
-
-### Preview: [Click to redirect](https://recomi.site/files/works/barrage-video-player/)
+### 预览示例/Preview：[点击跳转预览](https://recomi.site/files/works/barrage-video-player/)
+播放器的使用示例文件为./src/views/preview-videoplayer.vue
 
 ### 未来计划：
-- 支持弹幕（开发了一半）、websocket直播、添加对移动版的支持、and more...
-
-### Future plan: 
-- Support barrage, websocket live, support mobile, and more...
+- 咕咕咕
 
 ### 更新历史：
 - 0.1.1 增加了对同时使用多个播放器的支持，以及封面图
 
-### Updated history：
-- none
+### 使用方法：
+1. 复制./src/components下的四个xxx.vue文件到自己项目中
+2. 引入barrage-videoplayer.vue作为组件
+3. 传递的参数：可参阅该组件文件里的props列表，有属性对应的说明
 
 ### Project setup
 ```

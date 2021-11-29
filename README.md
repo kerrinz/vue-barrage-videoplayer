@@ -5,7 +5,7 @@
 > 一个基于Vue的视频播放器组件（弹幕未开发完），仅适配PC Web。\
 A vue component of video player (The barrage is in future). Only applies to PC web.
 
-### 预览示例/Preview：[点击跳转预览](https://yoleen.cc/files/works/barrage-video-player/)
+### 预览示例/Preview：[点击跳转预览](https://yleen.cc/files/works/barrage-video-player/)
 播放器的使用示例文件为./src/views/preview-videoplayer.vue
 
 ### 未来计划：

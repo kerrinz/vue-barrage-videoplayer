@@ -1,16 +1,16 @@
 /**
   传入参数（props）
-  必填项：name, src, 
+  必填项：src, 
   可选项：width, height, speed_list, barrage_list
  */
 <template>
   <div
-    :id="'player-area' + name"
+    ref="area"
     :class="{'player-area': true, 'player-fullscreen': is_fullscreen, 'cursor-lasting-static': is_cursor_static}"
   >
     <!-- 视频主体 -->
     <video
-      :id="name"
+      ref="video"
       class="player-video cursor-pointer"
       @click="togglePlayStatus"
       @keydown.f.prevent="toggleFullScreen"
@@ -220,10 +220,6 @@ export default {
   name: "barrage-videoplayer",
   components: { volumeBar, progressBar, playerBarrageScreen },
   props: {
-    // 每个播放器应使用不同的name，用于同时存在多个视频播放器的情况下区分事件
-    name: {
-      // type: String,
-    },
     width: {
       type: String,
       default: "100%",
@@ -281,7 +277,7 @@ export default {
   },
   created() {},
   mounted() {
-    this.video_dom = document.getElementById(this.name);
+    this.video_dom = this.$refs.video;
     this.video_dom.focus({preventScroll: true});
     setInterval(() => {
       // 定时更新进度条
@@ -452,10 +448,12 @@ export default {
     },
     //切换“全屏”和“非全屏”模式
     toggleFullScreen() {
-      let element = document.getElementById("player-area" + this.name);
+      let element = this.$refs.area;
       if (!this.isFullScreen()) {
         if (element.requestFullscreen) {
           element.requestFullscreen();
+        } else if(element.webkitRequestFullscreen) {
+          element.webkitRequestFullscreen();
         } else if (element.mozRequestFullScreen) {
           element.mozRequestFullScreen();
         } else if (element.msRequestFullscreen) {

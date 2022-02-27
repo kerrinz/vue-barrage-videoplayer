@@ -1,25 +1,55 @@
-## （暂停开发，有时间再继续）
+## vue-弹幕视频播放器
+简体中文 / [English](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/README_EN.md) 
+### 简介
+> 一个基于Vue的视频播放器组件（弹幕还没做完），仅适用于PC Web。
+>
+> 适用视频：http视频
+>
+> 功能：播放、音量控制、倍速、进度条控制、全屏
 
-## vue-barrage-videoplayer / vue-弹幕视频播放器
+### 预览示例
+- [点击跳转预览](https://yleen.cc/files/works/barrage-video-player/)
 
-> 一个基于Vue的视频播放器组件（弹幕还没加上），仅适用于PC Web。\
-A vue component of video player (The barrage is in future). Only applies to PC web.
+### 计划表
+- [X] 多播放器共存
+- [ ] 右键查看视频数据
+- [ ] 多语言支持
+- [ ] 弹幕（开发了一点）
+- [ ] 推流视频，websocket
+- [ ] 适配好移动端
 
-### 预览示例：[点击跳转预览](https://recomi.site/files/works/barrage-video-player/)
-
-### Preview: [Click to redirect](https://recomi.site/files/works/barrage-video-player/)
-
-### 未来计划：
-- 支持弹幕（开发了一半）、websocket直播、添加对移动版的支持、and more...
-
-### Future plan: 
-- Support barrage, websocket live, support mobile, and more...
-
-### 更新历史：
+### 更新历史
 - 0.1.1 增加了对同时使用多个播放器的支持，以及封面图
+- 0.1.2 优化了遗留的部分烂代码
 
-### Updated history：
-- none
+### 使用方式与示例
+可参考[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-videoplayer.vue)文件
+1. 将src/components下的四个文件复制到你的项目里，确保这四个文件保持在同一目录；
+2. 在页面中引用：
+``` vue
+<template>
+    <barrageVideoplayer
+        :src="video_src"
+        :cover="cover"
+        width="100%"
+        height="100%"
+    ></barrageVideoplayer>
+</template>
+<script>
+import barrageVideoplayer from "../components/barrage-videoplayer.vue";
+export default {
+  components: {barrageVideoplayer},
+  data() {
+    return {
+      video_src: "https://yleen.cc/files/videos/output.mp4", // 视频链接
+      cover: "https://yleen.cc/files/images/babala10.png", // 封面图的链接
+    };
+  },
+```
+
+### bug反馈
+- 提[issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)
+- 本人首页的联系方式
 
 ### Project setup
 ```

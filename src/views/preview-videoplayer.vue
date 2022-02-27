@@ -3,7 +3,6 @@
     <div class="video-wrap" v-for="n in 2" :key="n">
       <!-- 参考用法；有些参数可不选，传参详见barrage-videoplayer.vue文件 -->
       <barrageVideoplayer
-        :name="n"
         :src="video_src"
         :cover="cover"
         :barrage_list="barrage_list"

@@ -12,7 +12,9 @@ export default {
   components: {
     previewVideoplayer,
   },
-  data() {},
+  data() {
+    return {};
+  },
 };
 </script>
 

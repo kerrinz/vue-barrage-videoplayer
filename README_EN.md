@@ -5,6 +5,7 @@
 > Applicable video: http video
 >
 > Support: playback, volume control, multiple speed, progress bar control, full screen
+> Keyboard control：F fullscreen，↑↓ volume，←→ progress bar，Space pause/resume
 
 
 ### Preview

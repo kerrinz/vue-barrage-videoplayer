@@ -45,6 +45,7 @@ export default {
       cover: "https://yleen.cc/files/images/babala10.png", // 封面图的链接
     };
   },
+}
 ```
 
 ### bug反馈

@@ -45,6 +45,7 @@ export default {
       cover: "https://yleen.cc/files/images/babala10.png", // cover link
     };
   },
+}
 ```
 
 ### bug

@@ -17,6 +17,8 @@
 ### Preview
 - [Click to redirect](https://yleen.cc/files/works/barrage-video-player/)
 
+---
+
 ### Plan
 - [X] Multiplayer coexistence
 - [X] Barrage (a small part developed)
@@ -76,6 +78,8 @@ export default {
 ### bug
 - [issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)
 - contact me by email
+
+---
 
 ### Project setup
 ```

@@ -2,7 +2,7 @@
 简体中文 / [English](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/README_EN.md)
  
 ## 简介
-> 一个基于Vue的弹幕视频播放器组件。适用于：PC Web、静态资源视频
+> 一个基于Vue的弹幕视频播放器组件。适用于：`PC版网页`、`静态资源视频`
 
 ## 功能支持
 > 主要功能：播放、音量控制、倍速、进度条控制、全屏、弹幕（部分）
@@ -36,9 +36,10 @@
 
 ## 使用方式与示例
 可参考[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-videoplayer.vue) 文件
-1. 将src/components下的四个文件复制到你的项目里，确保这四个文件保持在同一目录；
-2. 将src/assets文件夹复制到项目src里面，确保/src/assets/images/loading.svg存在（该文件为缓冲时的加载图标）
-3. 在页面中引用barrage-videoplayer.vue
+1. 将`src/components`下的四个文件复制到你的项目里，确保这四个文件保持在同一目录；
+2. 将`src/assets`文件夹复制到项目`src/`里面，确保`/src/assets/images/loading.svg`存在（该文件为缓冲时的加载图标）
+3. 在页面中引用`barrage-videoplayer.vue`
+   - 注：项目需要引入`axios`
 ``` vue
 <template>
     <barrageVideoplayer
@@ -64,16 +65,16 @@ export default {
 ```
 
 ## 传入参数
-- （barrage-videoplayer.vue）
+`barrage-videoplayer.vue`
 
 | 字段 | 是否可选 | 类型 | 默认值 | 备注 |
 |---|---|---|---|---|
-| src | 必选 | String | null | 视频链接 |
-| cover | 可选 | String | null | 封面图的链接 |
-| width | 可选 | String | 100% | 视频宽度，对应css样式 |
-| height | 可选 | String | 100% | 视频高度，对应css样式 |
-| speed_list | 可选 | array | ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"]  | 倍速选择的列表 |
-| biBarrageXml | 可选 | String | null | 弹幕链接，使用的是B站XML风格，需处理跨域问题 |
+| src | `必选` | String | null | 视频链接 |
+| cover | `可选` | String | null | 封面图的链接 |
+| width | `可选` | String | 100% | 视频宽度，对应css样式 |
+| height | `可选` | String | 100% | 视频高度，对应css样式 |
+| speed_list | `可选` | array | ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"]  | 倍速选择的列表 |
+| biBarrageXml | `可选` | String | null | 弹幕链接，使用的是B站XML风格，需处理跨域问题 |
 
 ### bug反馈
 - 提[issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)

@@ -43,7 +43,7 @@
 <template>
     <barrageVideoplayer
         :src="video_src"
-        :cover="cover""
+        :cover="cover"
         :biBarrageXml="biBarrageXml"
         width="100%"
         height="100%"

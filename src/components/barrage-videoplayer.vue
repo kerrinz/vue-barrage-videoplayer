@@ -4,7 +4,7 @@
 <template>
   <div
     ref="area"
-    :class="{'player-area': true, 'player-fullscreen': is_fullscreen, 'cursor-lasting-static': is_cursor_static}"
+    :class="{'player-area': true, 'player-fullscreen': isFullscreen, 'cursor-lasting-static': isCursorStatic}"
   >
     <!-- 视频主体 -->
     <video
@@ -25,29 +25,29 @@
       <source :src="src" />
     </video>
     <!-- 封面图 -->
-    <div v-if="cover!=null && is_show_cover" class="player-cover">
-      <img :src="cover" :width="width" :height="height"/>
+    <div v-if="cover!=null && isShowCover" class="player-cover">
+      <img :src="cover" :width="width" :height="height" alt=""/>
     </div>
     <!-- 弹幕 -->
     <playerBarrageScreen
             v-if="biBarrageXml != null"
-            :video_dom="video_dom"
-            :barrage_timeline_start="barrage_timeline_start"
-            :is_playing="is_playing"
+            :videoDom="videoDom"
+            :barrageTimelineStart="barrageTimelineStart"
+            :isPlaying="isPlaying"
             :biBarrageXml="biBarrageXml"
     />
     <!-- 加载动画 -->
-    <div v-show="is_show_loading" class="player-loading" @click="video_dom.focus({preventScroll: true})">
+    <div v-show="isShowLoading" class="player-loading" @click="videoDom.focus({preventScroll: true})">
       <img src="@/assets/images/loading.svg"  alt="loading"/>
     </div>
     <!-- 控制栏 -->
-    <div class="player-controls-container" @click="video_dom.focus({preventScroll: true})">
-      <div v-show="is_show_volume_hint" class="player-volumeHint">
-        <span class="player-volumeHint-text">当前音量:{{volume_percent}}%</span>
+    <div class="player-controls-container" @click="videoDom.focus({preventScroll: true})">
+      <div v-show="isShowVolumeHint" class="player-volumeHint">
+        <span class="player-volumeHint-text">当前音量:{{volumePercent}}%</span>
       </div>
       <div class="player-paused-state">
         <svg
-          v-show="!is_playing"
+          v-show="!isPlaying"
           t="1596553913647"
           class="player-controls-icon"
           viewBox="0 0 1024 1024"
@@ -64,10 +64,10 @@
           />
         </svg>
       </div>
-      <div :class="{'player-controls': true, 'cursor-lasting-static': is_cursor_static}">
+      <div :class="{'player-controls': true, 'cursor-lasting-static': isCursorStatic}">
         <div class="player-progress-bar">
           <progressBar
-            :current_progress="current_progress"
+            :currentProgress="currentProgress"
             v-on:updateProgress="updateProgressByClickBar"
             v-on:getMouseDownStatus="getMouseDownStatusOfProgressBar"
             width="100%"
@@ -78,7 +78,7 @@
           <div class="player-controls-bottom-left">
             <div class="player-controls-btn cursor-pointer" @click="togglePlayStatus">
               <svg
-                v-show="!is_playing"
+                v-show="!isPlaying"
                 t="1596553913647"
                 class="player-controls-icon"
                 viewBox="0 0 1024 1024"
@@ -95,7 +95,7 @@
                 />
               </svg>
               <svg
-                v-show="is_playing"
+                v-show="isPlaying"
                 t="1596554115916"
                 class="player-controls-icon"
                 viewBox="0 0 1024 1024"
@@ -112,11 +112,11 @@
                 />
               </svg>
             </div>
-            <div class="player-time">{{ current_time_format }} / {{ full_time_format }}</div>
+            <div class="player-time">{{ currentTimeFormat }} / {{ fullTimeFormat }}</div>
           </div>
           <div class="player-controls-bottom-right">
             <div class="player-controls-btn cursor-pointer btn-speed">
-              <span>{{current_speed == '1.0' ? '倍速' : current_speed+'x'}}</span>
+              <span>{{currentSpeed === '1.0' ? '倍速' : `${currentSpeed}x`}}</span>
               <div class="speed-control">
                 <ul class="speed-control-list">
                   <li
@@ -124,13 +124,13 @@
                     :key="item"
                     @click="changeSpeed"
                     :data-value="item"
-                    :class="{'current': current_speed == item}"
+                    :class="{'current': currentSpeed === item}"
                   >{{ item }}x</li>
                 </ul>
               </div>
             </div>
             <div class="player-controls-btn btn-volume">
-              <div class="cursor-pointer" type="buttom" @click="showVolumeControl">
+              <div class="cursor-pointer">
                 <svg
                   t="1596553801150"
                   class="player-controls-icon"
@@ -150,9 +150,9 @@
               </div>
               <div class="volume-control">
                 <div class="volume-control-wrap">
-                  <div class="volume-text">{{ volume_percent }}</div>
+                  <div class="volume-text">{{ volumePercent }}</div>
                   <volumeBar
-                    :current_volume="current_volume"
+                    :currentVolume="currentVolume"
                     v-on:updateVolume="updateVolumeByClickBar"
                     width="4px"
                   ></volumeBar>
@@ -161,7 +161,7 @@
             </div>
             <div class="player-controls-btn cursor-pointer" @click="toggleFullScreen">
               <svg
-                v-show="!is_fullscreen"
+                v-show="!isFullscreen"
                 class="player-controls-icon"
                 t="1596553111831"
                 viewBox="0 0 1024 1024"
@@ -183,7 +183,7 @@
                 />
               </svg>
               <svg
-                v-show="is_fullscreen"
+                v-show="isFullscreen"
                 t="1596958879235"
                 class="player-controls-icon"
                 viewBox="0 0 1024 1024"
@@ -206,7 +206,7 @@
               </svg>
               <div
                 class="player-controls-btn-hint btn-fullscreen-hint"
-              >{{is_fullscreen ? '退出全屏' : '进入全屏'}}</div>
+              >{{isFullscreen ? '退出全屏' : '进入全屏'}}</div>
             </div>
           </div>
         </div>
@@ -257,102 +257,100 @@ export default {
   },
   data() {
     return {
-      video_dom: null, //视频dom
-      is_show_cover: true, // 是否显示封面
-      is_fullscreen: false, // 是否处于全屏模式
-      is_cursor_static: false, // 鼠标是否长时间静止不动
-      is_mousedown_progress: false, // 鼠标是否按下了进度条（并未松开）
-      is_show_volume_control: false, // 是否显示音量控制面板
-      is_playing: false, // 是否正在播放
-      is_show_loading: false, // 是否显示加载框
-      is_show_volume_hint: false, // 是否显示音量提示条（键盘触发）
-      timeout_volume_hint: 0, // 音量提示条多久ms后隐藏
-      timeout_controls_hint: 0, // 控制面板多久ms后隐藏
-      current_speed: "1.0", // 当前倍速
-      volume_percent: 100, // 当前音量百分比（0-100），仅用于文字显示
-      current_volume: 1, // 当前音量（0-1），同时作用于当前音量条的长度
-      current_progress: 0, // 当前播放进度（0-1）。同时作用于当前进度条的长度
-      current_time_format: "00:00", // 当前播放进度的文字
-      full_time_format: "00:00", // 视频总长度的文字
-      barrage_timeline_start: 0, // 弹幕时间轴的起始时间点（手动调整进度条触发更新）
+      videoDom: null, //视频dom
+      isShowCover: true, // 是否显示封面
+      isFullscreen: false, // 是否处于全屏模式
+      isCursorStatic: false, // 鼠标是否长时间静止不动
+      isMousedownProgress: false, // 鼠标是否按下了进度条（并未松开）
+      isPlaying: false, // 是否正在播放
+      isShowLoading: false, // 是否显示加载框
+      isShowVolumeHint: false, // 是否显示音量提示条（键盘触发）
+      timeoutVolumeHint: 0, // 音量提示条多久ms后隐藏
+      timeoutControlsHint: 0, // 控制面板多久ms后隐藏
+      currentSpeed: "1.0", // 当前倍速
+      volumePercent: 100, // 当前音量百分比（0-100），仅用于文字显示
+      currentVolume: 1, // 当前音量（0-1），同时作用于当前音量条的长度
+      currentProgress: 0, // 当前播放进度（0-1）。同时作用于当前进度条的长度
+      currentTimeFormat: "00:00", // 当前播放进度的文字
+      fullTimeFormat: "00:00", // 视频总长度的文字
+      barrageTimelineStart: 0, // 弹幕时间轴的起始时间点（手动调整进度条触发更新）
     };
   },
   created() {},
   mounted() {
-    this.video_dom = this.$refs.video;
-    this.video_dom.focus({preventScroll: true});
+    this.videoDom = this.$refs.video;
+    this.videoDom.focus({preventScroll: true});
     setInterval(() => {
       // 定时更新进度条
-      if (this.is_playing && !this.is_mousedown_progress) {
-        this.current_progress =
-          this.video_dom.currentTime / this.video_dom.duration;
+      if (this.isPlaying && !this.isMousedownProgress) {
+        this.currentProgress =
+          this.videoDom.currentTime / this.videoDom.duration;
       }
       // 定时更新进度的文字显示
       this.updateProgressText();
       // 音量提示面板的定时隐藏
-      if (this.timeout_volume_hint == null) {
+      if (this.timeoutVolumeHint == null) {
         // 当定时为null，直接跳过
-      } else if (this.timeout_volume_hint == 0) {
-        this.is_show_volume_hint = false;
-        this.is_cursor_static = false;
-        this.timeout_volume_hint == null;
-      } else if (this.timeout_volume_hint > 0) {
-        this.timeout_volume_hint -= 1000;
+      } else if (this.timeoutVolumeHint === 0) {
+        this.isShowVolumeHint = false;
+        this.isCursorStatic = false;
+        this.timeoutVolumeHint = null;
+      } else if (this.timeoutVolumeHint > 0) {
+        this.timeoutVolumeHint -= 1000;
       } else {
-        this.timeout_volume_hint = 0;
+        this.timeoutVolumeHint = 0;
       }
       // 总控制面板的定时隐藏
       if (
-        this.timeout_controls_hint == null ||
-        this.current_progress == 0 ||
-        this.current_progress == 1
+        this.timeoutControlsHint == null ||
+        this.currentProgress === 0 ||
+        this.currentProgress === 1
       ) {
         // 当定时为null、视频还未播放或播放完毕的时候，直接跳过
-      } else if (this.timeout_controls_hint == 0) {
-        this.is_cursor_static = true;
-        this.timeout_controls_hint == null;
-      } else if (this.timeout_controls_hint > 0) {
-        this.timeout_controls_hint -= 1000;
+      } else if (this.timeoutControlsHint === 0) {
+        this.isCursorStatic = true;
+        this.timeoutControlsHint = null;
+      } else if (this.timeoutControlsHint > 0) {
+        this.timeoutControlsHint -= 1000;
       } else {
-        this.timeout_controls_hint = 0;
+        this.timeoutControlsHint = 0;
       }
       // 根据视频的readyState判断下一帧是否已加载，并控制loading的显示
-      if (this.video_dom.readyState >= 3) {
-        this.is_show_loading = false;
-      } else {
-        this.is_show_loading = true;
-      }
+      this.isShowLoading = this.videoDom.readyState < 3;
     }, 1000);
     // 视频dom监听器，用于控制鼠标的显示
-    this.video_dom.addEventListener("mousemove", () => {
-      this.is_cursor_static = false;
-      this.timeout_controls_hint = 2000;
+    this.videoDom.addEventListener("mousemove", () => {
+      this.isCursorStatic = false;
+      this.timeoutControlsHint = 2000;
     });
     // 监听全屏事件的变化，保存数据
     window.addEventListener("fullscreenchange", () => {
-      this.is_fullscreen = this.isFullScreen();
+      this.isFullscreen = this.isFullScreen();
     });
   },
   methods: {
-    //切换播放状态
+    /* 切换播放状态
+     */
     togglePlayStatus() {
-      if (this.video_dom.paused) {
-        this.video_dom.play();
-        this.is_playing = true;
+      if (this.videoDom.paused) {
+        this.videoDom.play();
+        this.isPlaying = true;
       } else {
-        this.video_dom.pause();
-        this.is_playing = false;
+        this.videoDom.pause();
+        this.isPlaying = false;
       }
-      this.is_show_cover = false;
+      this.isShowCover = false;
     },
-    //更新视频进度的文字显示
+    /* 更新视频进度的文字显示
+     */
     updateProgressText() {
-      this.current_time_format = this.secondTimeFormat(
-        this.video_dom.currentTime
+      this.currentTimeFormat = this.secondTimeFormat(
+        this.videoDom.currentTime
       );
-      this.full_time_format = this.secondTimeFormat(this.video_dom.duration);
+      this.fullTimeFormat = this.secondTimeFormat(this.videoDom.duration);
     },
-    //时间格式化，秒格式化成xx:xx:xx
+    /* 时间格式化，秒格式化成xx:xx:xx
+     */
     secondTimeFormat(second) {
       let result = parseInt(second);
       let h =
@@ -370,85 +368,89 @@ export default {
       result = `${h}:${m}:${s}`;
       return result;
     },
-    //前进视频播放进度
+    /* 前进视频播放进度
+     */
     forwardCurrentTime() {
-      let newCurrentTime = this.video_dom.currentTime + 5;
-      this.video_dom.currentTime = newCurrentTime;
-      this.barrage_timeline_start = newCurrentTime;
+      let newCurrentTime = this.videoDom.currentTime + 5;
+      this.videoDom.currentTime = newCurrentTime;
+      this.barrageTimelineStart = newCurrentTime;
       this.updateProgressBySetTime(newCurrentTime);
     },
-    //后退视频播放进度
+    /* 后退视频播放进度
+     */
     backwardCurrentTime() {
-      let newCurrentTime = this.video_dom.currentTime - 5;
-      this.video_dom.currentTime = newCurrentTime;
-      this.barrage_timeline_start = newCurrentTime;
+      let newCurrentTime = this.videoDom.currentTime - 5;
+      this.videoDom.currentTime = newCurrentTime;
+      this.barrageTimelineStart = newCurrentTime;
       this.updateProgressBySetTime(newCurrentTime);
     },
-    //获取鼠标是否按下了进度条
+    /* 获取鼠标是否按下了进度条
+     */
     getMouseDownStatusOfProgressBar(value) {
-      this.is_mousedown_progress = value;
+      this.isMousedownProgress = value;
     },
-    //点击进度条更新视频播放进度
+    /* 点击进度条更新视频播放进度
+     */
     updateProgressByClickBar(value) {
-      let duration = this.video_dom.duration;
-      this.current_progress = value;
+      let duration = this.videoDom.duration;
+      this.currentProgress = value;
       let new_current_time = Math.round(value * duration);
-      this.barrage_timeline_start = new_current_time;
-      this.video_dom.currentTime = new_current_time;
-      // console.log(value);
-      // console.log("now duration:" + Math.round(value * duration));
+      this.barrageTimelineStart = new_current_time;
+      this.videoDom.currentTime = new_current_time;
     },
-    //通过新的播放时间更新视频播放进度
+    /* 通过新的播放时间更新视频播放进度
+     */
     updateProgressBySetTime(newCurrentTime) {
-      this.current_progress = newCurrentTime / this.video_dom.duration;
+      this.currentProgress = newCurrentTime / this.videoDom.duration;
     },
-    //提高视频音量
+    /* 提高视频音量
+     */
     increaseVolume() {
-      this.is_show_volume_hint = true;
-      this.timeout_volume_hint = 2000;
-      let nowVolume = this.video_dom.volume;
+      this.isShowVolumeHint = true;
+      this.timeoutVolumeHint = 2000;
+      let nowVolume = this.videoDom.volume;
       if (nowVolume >= 0.9) {
-        this.video_dom.volume = 1;
-        this.current_volume = 1;
+        this.videoDom.volume = 1;
+        this.currentVolume = 1;
       } else {
-        let newVolume = this.video_dom.volume + 0.1;
-        this.video_dom.volume = newVolume;
-        this.current_volume = newVolume;
+        let newVolume = this.videoDom.volume + 0.1;
+        this.videoDom.volume = newVolume;
+        this.currentVolume = newVolume;
       }
     },
-    //降低视频音量
+    /* 降低视频音量
+     */
     lowerVolume() {
-      this.is_show_volume_hint = true;
-      this.timeout_volume_hint = 2000;
-      let nowVolume = this.video_dom.volume;
+      this.isShowVolumeHint = true;
+      this.timeoutVolumeHint = 2000;
+      let nowVolume = this.videoDom.volume;
       if (nowVolume <= 0.1) {
-        this.video_dom.volume = 0;
-        this.current_volume = 0;
+        this.videoDom.volume = 0;
+        this.currentVolume = 0;
       } else {
-        let newVolume = this.video_dom.volume - 0.1;
-        this.video_dom.volume = newVolume;
-        this.current_volume = newVolume;
+        let newVolume = this.videoDom.volume - 0.1;
+        this.videoDom.volume = newVolume;
+        this.currentVolume = newVolume;
       }
     },
-    // 视频倍速播放
+    /*  视频倍速播放
+     */
     changeSpeed(e) {
       // 获取选择的倍速
       let value = e.currentTarget.dataset.value;
       // 应用视频倍速
-      this.video_dom.playbackRate = value;
+      this.videoDom.playbackRate = value;
       // 标记变更后的倍速，用于显示文字
-      this.current_speed = value;
+      this.currentSpeed = value;
     },
-    //点击音量条后更新音量（value范围：0-1）
+    /* 点击音量条后更新音量（value范围：0-1）
+     */
     updateVolumeByClickBar(value) {
-      this.video_dom.volume = value;
-      this.current_volume = value;
+      this.videoDom.volume = value;
+      this.currentVolume = value;
     },
-    //显示音量控制面板
-    showVolumeControl() {
-      this.is_show_volume_control = !this.is_show_volume_control;
-    },
-    //切换“全屏”和“非全屏”模式
+    /* 切换“全屏”和“非全屏”模式
+     */
     toggleFullScreen() {
       let element = this.$refs.area;
       if (!this.isFullScreen()) {
@@ -463,7 +465,7 @@ export default {
         } else if (element.oRequestFullscreen) {
           element.oRequestFullscreen();
         }
-        this.is_fullscreen = true;
+        this.isFullscreen = true;
       } else {
         if (document.exitFullscreen) {
           document.exitFullscreen();
@@ -476,10 +478,11 @@ export default {
         } else if (document.webkitExitFullscreen) {
           document.webkitExitFullscreen();
         }
-        this.is_fullscreen = false;
+        this.isFullscreen = false;
       }
     },
-    //判断是否进入了全屏模式
+    /* 判断是否进入了全屏模式
+     */
     isFullScreen: function () {
       return !!(
         document.fullscreen ||
@@ -491,19 +494,19 @@ export default {
     },
   },
   watch: {
-    current_volume: function () {
+    currentVolume: function () {
       // 根据当前音量大小设置显示的音量文字
-      this.volume_percent = Math.round(this.current_volume * 100);
+      this.volumePercent = Math.round(this.currentVolume * 100);
     },
-    current_progress: function () {
+    currentProgress: function () {
       // 进度条到终点时修改播放状态
-      if (this.current_progress == 1) {
-        this.is_playing = false;
+      if (this.currentProgress === 1) {
+        this.isPlaying = false;
       }
     },
     src: function () {
       // 当视频地址变更时，重载视频
-      this.video_dom.load();
+      this.videoDom.load();
     },
   },
 };
@@ -565,7 +568,7 @@ export default {
   transform: translate(0, -100%);
   border-radius: 6px;
   box-shadow: 0 0 4px #bbbbbb;
-  background: rgb(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.8);
 }
 .player-paused-state svg {
   margin: 0.4rem 1rem;
@@ -582,7 +585,7 @@ export default {
   pointer-events: none;
   transform: translate(0, -100%);
   border-radius: 4px;
-  background: rgb(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.8);
 }
 .player-volumeHint-text {
   position: relative;
@@ -654,7 +657,7 @@ export default {
   white-space: nowrap;
   padding: 0.4rem 0.6rem;
   border-radius: 4px;
-  background: rgb(21, 21, 21, 0.8);
+  background: rgba(21, 21, 21, 0.8);
   transition: opacity 0.3s, visibility 0s;
   transform: translate(-50%, -200%);
 }

@@ -1,7 +1,7 @@
 /**
   $emit: updateVolume -> 更新音量，参数为一个0-1的音量值
   props: width, height,
-        current_volume, -> 当前音量（0-1）
+        currentVolume, -> 当前音量（0-1）
  */
 
 <template>
@@ -15,7 +15,7 @@
     <div class="volume-full" :style="{width: width, height: height}">
       <div
         class="volume-current volume-ball"
-        :style="{width: '100%', height: current_volume * 100 + '%'}"
+        :style="{width: '100%', height: currentVolume * 100 + '%'}"
       ></div>
     </div>
   </div>
@@ -34,7 +34,7 @@ export default {
       default: "100%",
     },
     //当前音量（0-1）
-    current_volume: {
+    currentVolume: {
       type: Number,
       default: 1
     }
@@ -88,7 +88,6 @@ export default {
     },
     up() {
       this.is_click_bar = false;
-      // console.log("当前音量：" + this.current_volume * 100 + "%");
     },
   },
 };

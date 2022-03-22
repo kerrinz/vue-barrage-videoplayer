@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <div class="video-wrap" v-for="n in 1" :key="n">
-      <!-- 参考用法；有些参数可不选，传参详见barrage-videoplayer.vue文件 -->
+      <!-- 核心组件 -->
       <barrageVideoplayer
-        :src="video_src"
+        :src="videoSrc"
         :cover="cover"
         :biBarrageXml="biBarrageXml"
         width="100%"
         height="100%"
       ></barrageVideoplayer>
     </div>
-    <div class="video-src">视频地址：{{ video_src }}</div>
+    <div class="video-src">视频地址：{{ videoSrc }}</div>
     <div class="upload-btn">
       <input type="file" @change="onInputFileChange" />
       <span>选择本地视频</span>
@@ -30,7 +30,7 @@
   },
   data() {
     return {
-      video_src: "https://yleen.cc/files/videos/output.mp4", // 视频链接
+      videoSrc: "https://yleen.cc/files/videos/output.mp4", // 视频链接
       cover: "https://yleen.cc/files/images/liuhua1.png", // 可选，封面图的链接
       biBarrageXml: "/files/danmu_bili/danmaku.xml", // 获可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
     };
@@ -39,7 +39,7 @@
     /* 选择本地视频文件
      */
     onInputFileChange(e) {
-      this.video_src = URL.createObjectURL(e.currentTarget.files[0]);
+      this.videoSrc = URL.createObjectURL(e.currentTarget.files[0]);
     },
     /* 选择本地弹幕文件
      */

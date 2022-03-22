@@ -1,8 +1,8 @@
 /**
-  $emit: updateProgress, -> 调整进度条后触发的事件，传递参数：current_progress
+  $emit: updateProgress, -> 调整进度条后触发的事件，传递参数：currentProgress
          getMouseDownStatus, -> 获取是否鼠标按下的状态，传递参数：true/false
-  props: width, height, 
-         current_progress, -> 当前进度，范围0-1
+  props: width, height,
+         currentProgress, -> 当前进度，范围0-1
  */
 <template>
   <div
@@ -13,7 +13,7 @@
     @mouseup="up"
   >
     <div class="progress-full" :style="{height: height}">
-      <div class="progress-current" :style="{width: current_progress * 100 + '%'}"></div>
+      <div class="progress-current" :style="{width: currentProgress * 100 + '%'}"></div>
     </div>
   </div>
 </template>
@@ -31,7 +31,7 @@ export default {
       default: "4px",
     },
     // 当前进度，范围0-1
-    current_progress: {
+    currentProgress: {
       type: Number,
       default: 0,
     },
@@ -70,17 +70,17 @@ export default {
       // 计算调整后的当前进度条的长度
       this.current_width_px = e.clientX - init_clientX;
       // 设置当前的播放进度（同时作用于当前进度条的样式）
-        let current_progress =
+        let current =
           (e.clientX - init_clientX) / this.dom_full.clientWidth;
-        this.$emit("updateProgress", current_progress);
+        this.$emit("updateProgress", current);
     },
     move(e) {
       if (this.is_mousedown_progress) {
         let init_clientX = this.dom_full.getBoundingClientRect().left;
         this.current_width_px = e.clientX - init_clientX;
-        let current_progress =
+        let current =
           (e.clientX - init_clientX) / this.dom_full.clientWidth;
-        this.$emit("updateProgress", current_progress);
+        this.$emit("updateProgress", current);
       }
     },
     up() {
@@ -88,9 +88,9 @@ export default {
         // 标记鼠标不处于按下的状态了
         this.is_mousedown_progress = false;
         // 松开鼠标后，即调整进度条后，此时的进度（0-1）
-        let current_progress =
+        let current =
           this.current_width_px / this.dom_full.clientWidth;
-        this.$emit("updateProgress", current_progress);
+        this.$emit("updateProgress", current);
         this.$emit("getMouseDownStatus", false);
       }
     },

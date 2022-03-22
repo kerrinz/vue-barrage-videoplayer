@@ -1,6 +1,7 @@
 <template>
   <div class="player-barrage-wrap">
-    <div v-for="n in 10" :ref="'channel' + n" class="player-barrage-layer" :key="'layer'+ (n -1)" :id="'layer'+ (n-1)"></div>
+    <div v-for="n in channelAmount" ref="channels" class="player-barrage-layer" :key="`channel-${(n -1)}`">
+    </div>
   </div>
 </template>
 
@@ -11,18 +12,18 @@
     name: "player-barrage-screen",
     props: {
       // 是否正在播放
-      is_playing: {
+      isPlaying: {
         type: Boolean,
         default: false,
       },
       // 当前播放进度
-      current_time: {
+      currentTime: {
         type: Number,
         default: 0,
       },
-      video_dom: null,
+      videoDom: null,
       // 弹幕时间轴的初始时间（手动干预进度条会触发更新）
-      barrage_timeline_start: {
+      barrageTimelineStart: {
         type: Number,
         default: 0,
       },
@@ -34,22 +35,22 @@
     },
     data() {
       return {
-        barraged_tag: 0, // 标记上一条弹幕的索引
-        barrage_list: [], // 弹幕列表
+        barragedTag: 0, // 标记上一条弹幕的索引
+        barrageList: [], // 弹幕列表
+        channelAmount: 10, // 弹幕通道数量
       };
     },
     mounted() {
       this.requestBarrageList();
-      console.log(this.$refs);
       // 测试弹幕
       setInterval(() => {
-        if (this.is_playing) {
-          let info = this.barrage_list[this.barraged_tag];
-          if (info.start_time < this.video_dom.currentTime) {
+        if (this.isPlaying) {
+          let info = this.barrageList[this.barragedTag];
+          if (info.start_time < this.videoDom.currentTime) {
             // 标记下一条弹幕的索引
-            this.barraged_tag++;
+            this.barragedTag++;
             if (info.mode <= 3) {
-              this.createBarrage(this.barrage_list[this.barraged_tag]);
+              this.createBarrage(this.barrageList[this.barragedTag]);
             }
           }
         }
@@ -84,7 +85,6 @@
               row_id: p_attr_list[7],
             };
             array.push(info);
-            // console.log(info);
           }
           // 写个冒泡过渡一下。。
           for (let i = 0, len = array.length; i < len; i++) {
@@ -96,8 +96,7 @@
               }
             }
           }
-          this.barrage_list = array;
-          console.log(array);
+          this.barrageList = array;
         });
       },
       /* 新建一个弹幕
@@ -108,24 +107,21 @@
         // dom.setAttribute("class", "barrage");
         dom.style.animation = "barrage 5s linear 0s";
         dom.style.left = "100%";
-        dom.style.fontSize = info.font_size + "px";
-        dom.style.color = "#" + info.font_color;
+        dom.style.fontSize = `${info.font_size}px`;
+        dom.style.color = `#${info.font_color}`;
         dom.style.whiteSpace = "nowrap";
         dom.style.textShadow =
           "#000 1px 0px 1px, #000 0px 1px 1px, #000 0px -1px 1px, #000 -1px 0px 1px";
-        // dom.style.zIndex = "1000";
         dom.style.position = "absolute";
-        window.document
-          .getElementsByClassName("player-barrage-layer")[Math.round(Math.random() * 9)].append(dom);
         //动画过渡完之后清除掉弹幕dom
         dom.addEventListener("animationend", () => {
           dom.removeEventListener("animationend", this, false);
           dom.innerHTML = "";
           dom.parentNode.removeChild(dom);
           dom.remove();
-          // console.log('清除了一个弹幕～');
           dom = null;
         });
+        this.$refs["channels"][Math.round(Math.random() * 9)].append(dom);
       },
     },
     watch: {
@@ -137,12 +133,12 @@
       /* 弹幕时间轴的初始时间。
        * 在手动改变进度条的时候触发，遍历弹幕列表获取下一条弹幕的索引
        */
-      barrage_timeline_start: function () {
-        let list = this.barrage_list;
-        let barrage_start = this.barrage_timeline_start;
+      barrageTimelineStart: function () {
+        let list = this.barrageList;
+        let barrage_start = this.barrageTimelineStart;
         for (let n = 0; n < list.length; n++) {
           if (list[n].start_time > barrage_start) {
-            this.barraged_tag = n;
+            this.barragedTag = n;
             break;
           }
         }

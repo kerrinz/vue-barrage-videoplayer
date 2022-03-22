@@ -1,86 +1,50 @@
 <template>
   <div class="container">
-    <div class="video-wrap" v-for="n in 2" :key="n">
+    <div class="video-wrap" v-for="n in 1" :key="n">
       <!-- 参考用法；有些参数可不选，传参详见barrage-videoplayer.vue文件 -->
       <barrageVideoplayer
         :src="video_src"
         :cover="cover"
-        :barrage_list="barrage_list"
+        :biBarrageXml="biBarrageXml"
         width="100%"
         height="100%"
       ></barrageVideoplayer>
     </div>
-    <div class="video-src">{{ video_src }}</div>
+    <div class="video-src">视频地址：{{ video_src }}</div>
     <div class="upload-btn">
       <input type="file" @change="onInputFileChange" />
       <span>选择本地视频</span>
+    </div>
+    <div class="upload-btn">
+      <input type="file" @change="onInputBarrageChange" />
+      <span>导入本地XML弹幕文件</span>
     </div>
   </div>
 </template>
 
 <script>
-import barrageVideoplayer from "../components/barrage-videoplayer.vue";
-import axios from "axios";
-
-export default {
+  import barrageVideoplayer from "../components/barrage-videoplayer.vue";
+  export default {
   components: {
     barrageVideoplayer,
   },
   data() {
     return {
-      video_src: "https://recomi.site/files/videos/output.mp4", // 视频链接
-      cover: "https://recomi.site/files/images/babala10.png", // 封面图的链接
-      barrage_src: "/api_bilibili/x/v1/dm/list.so?oid=131068", // 弹幕获取来源
-      barrage_list: [], // 弹幕列表
+      video_src: "https://yleen.cc/files/videos/output.mp4", // 视频链接
+      cover: "https://yleen.cc/files/images/liuhua1.png", // 可选，封面图的链接
+      biBarrageXml: "/files/danmu_bili/danmaku.xml", // 获可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
     };
   },
-  created() {
-    // 获取弹幕列表
-    axios({
-      method: "get",
-      url: this.barrage_src,
-      data: {},
-    }).then((res) => {
-      var xmlDoc = new DOMParser().parseFromString(res.data, "text/xml");
-      var elements = xmlDoc.getElementsByTagName("d");
-      var array = [];
-      for (let n = 0, len = elements.length; n < len; n++) {
-        let p_attr_list = elements[n].getAttribute("p").split(",");
-        // 弹幕的信息
-        let color = Number(p_attr_list[3]).toString(16);
-        let info = {
-          content: elements[n].innerHTML,
-          start_time: Number(p_attr_list[0]),
-          mode: Number(p_attr_list[1]),
-          font_size: p_attr_list[2],
-          font_color: color,
-          timestamp: p_attr_list[4],
-          barrage_pool: p_attr_list[5],
-          user_hash: p_attr_list[6],
-          row_id: p_attr_list[7],
-        };
-        array.push(info);
-        // console.log(info);
-      }
-      // 写个冒泡过渡一下。。
-      for (let i = 0, len = array.length; i < len; i++) {
-        for (let j = 0, len_cache = len - i - 1; j < len_cache; j++) {
-          if (array[j].start_time > array[j + 1].start_time) {
-            let array_cache = array[j];
-            array[j] = array[j + 1];
-            array[j + 1] = array_cache;
-          }
-        }
-      }
-      this.barrage_list = array;
-      console.log(array);
-    });
-  },
   methods: {
-    // 选择文件后将地址配置到视频上
+    /* 选择本地视频文件
+     */
     onInputFileChange(e) {
-      let url = URL.createObjectURL(e.currentTarget.files[0]);
-      this.video_src = url;
+      this.video_src = URL.createObjectURL(e.currentTarget.files[0]);
+    },
+    /* 选择本地弹幕文件
+     */
+    onInputBarrageChange(e) {
+      this.biBarrageXml = URL.createObjectURL(e.currentTarget.files[0]);
     },
   },
 };
@@ -104,8 +68,7 @@ export default {
   display: inline-block;
   position: relative;
   padding: 4px 10px;
-  margin: 0.4rem 0;
-  color: #888;
+  margin: 0.4rem;
   background: #fafafa;
   color: #0082ba;
   border: 1px solid #5c9bb6;

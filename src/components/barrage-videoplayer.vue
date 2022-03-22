@@ -1,8 +1,6 @@
-/**
-  传入参数（props）
-  必填项：src, 
-  可选项：width, height, speed_list, barrage_list
- */
+<!--  传入参数（props）-->
+<!--  必填项：src,-->
+<!--  可选项：width, height, speedList, cover, biBarrageXml-->
 <template>
   <div
     ref="area"
@@ -31,10 +29,16 @@
       <img :src="cover" :width="width" :height="height"/>
     </div>
     <!-- 弹幕 -->
-    <playerBarrageScreen v-if="barrage_list.length > 0" :video_dom="video_dom" :barrage_list="barrage_list" :barrage_timeline_start="barrage_timeline_start" :is_playing="is_playing"/>
+    <playerBarrageScreen
+            v-if="biBarrageXml != null"
+            :video_dom="video_dom"
+            :barrage_timeline_start="barrage_timeline_start"
+            :is_playing="is_playing"
+            :biBarrageXml="biBarrageXml"
+    />
     <!-- 加载动画 -->
     <div v-show="is_show_loading" class="player-loading" @click="video_dom.focus({preventScroll: true})">
-      <img src="../assets/images/loading.svg" />
+      <img src="@/assets/images/loading.svg"  alt="loading"/>
     </div>
     <!-- 控制栏 -->
     <div class="player-controls-container" @click="video_dom.focus({preventScroll: true})">
@@ -116,7 +120,7 @@
               <div class="speed-control">
                 <ul class="speed-control-list">
                   <li
-                    v-for="item in speed_list"
+                    v-for="item in speedList"
                     :key="item"
                     @click="changeSpeed"
                     :data-value="item"
@@ -229,7 +233,7 @@ export default {
       default: "100%",
     },
     // 倍速列表
-    speed_list: {
+    speedList: {
       type: Array,
       default: function () {
         return ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"];
@@ -245,13 +249,11 @@ export default {
       type: String,
       default: null,
     },
-    // 弹幕列表
-    barrage_list: {
-      type: Array,
-      default: function () {
-        return [];
-      },
-    },
+    // 弹幕的链接地址（XML文件格式，B站风格）
+    biBarrageXml: {
+      type: String,
+      default: null,
+    }
   },
   data() {
     return {
@@ -548,7 +550,6 @@ export default {
   right: 50%;
   width: 80px;
   height: 80px;
-  /* background: rgb(255, 255, 255, 0.8); */
   transform: translate(-50%, -50%);
 }
 .player-loading img {

@@ -36,7 +36,7 @@ module.exports = {
         }
       },
       '/': {
-        target: 'https://recomi.site',
+        target: 'https://yleen.cc',
         secure: true,
         ws: false,
         changeOrigin: true

@@ -117,7 +117,7 @@
           </div>
           <div class="player-controls-bottom-right">
             <div class="player-controls-btn cursor-pointer btn-speed">
-              <span>{{currentSpeed === '1.0' ? '倍速' : `${currentSpeed}x`}}</span>
+              <span>{{currentSpeed === 1 ? '倍速' : `${currentSpeed}x`}}</span>
               <div class="speed-control">
                 <ul class="speed-control-list">
                   <li
@@ -125,7 +125,7 @@
                     :key="item"
                     @click="changeSpeed"
                     :data-value="item"
-                    :class="{'current': currentSpeed === item}"
+                    :class="{'current': currentSpeed === Number(item)}"
                   >{{ item }}x</li>
                 </ul>
               </div>
@@ -237,7 +237,7 @@ export default {
     speedList: {
       type: Array,
       default: function () {
-        return ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"];
+        return ["2.0", "1.5", "1.25", "1.0", "0.75", "0.5"];
       },
     },
     // 视频链接
@@ -273,7 +273,7 @@ export default {
       isShowVolumeHint: false, // 是否显示音量提示条（键盘触发）
       timeoutVolumeHint: 0, // 音量提示条多久ms后隐藏
       timeoutControlsHint: 0, // 控制面板多久ms后隐藏
-      currentSpeed: "1.0", // 当前倍速
+      currentSpeed: 1.0, // 当前倍速
       volumePercent: 100, // 当前音量百分比（0-100），仅用于文字显示
       currentVolume: 1, // 当前音量（0-1），同时作用于当前音量条的长度
       currentProgress: 0, // 当前播放进度（0-1）。同时作用于当前进度条的长度
@@ -447,7 +447,7 @@ export default {
       // 应用视频倍速
       this.videoDom.playbackRate = value;
       // 标记变更后的倍速，用于显示文字
-      this.currentSpeed = value;
+      this.currentSpeed = Number(value);
     },
     /* 点击音量条后更新音量（value范围：0-1）
      */

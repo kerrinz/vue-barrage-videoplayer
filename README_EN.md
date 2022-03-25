@@ -73,7 +73,7 @@ export default {
 | primaryColor | optional | String | "cornflowerblue" | Theme color. Can use css attributes：colorName、#Hex、rgb、rgba、HSL、HSLA |
 | width | optional | String | 100% | Video width with css code. |
 | height | optional | String | 100% | Video height with css cod. |
-| speedList | optional | array | ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"]  | Multiple play speed. |
+| speedList | optional | array | ["2.0", "1.5", "1.25", "1.0", "0.75", "0.5"]  | Multiple play speed. |
 | biBarrageXml | optional | String | null | Barrages source with Bilibili XML format.Need to deal with cross-domain issues. |
 
 ### bug

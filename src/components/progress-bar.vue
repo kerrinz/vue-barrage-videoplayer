@@ -113,7 +113,6 @@ export default {
   position: relative;
   display: inline-block;
   width: 100%;
-  /* height: inherit; */
   background: rgb(201, 201, 201);
   transition: height 0.3s;
 }
@@ -124,7 +123,7 @@ export default {
   height: inherit;
   width: 50%;
   display: inline-block;
-  background: #00d8d9;
+  background-color: var(--primaryColor);
 }
 .progress-current::after {
   content: "";

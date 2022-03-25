@@ -6,6 +6,7 @@
         :src="videoSrc"
         :cover="cover"
         :biBarrageXml="biBarrageXml"
+        primaryColor="#FB7299"
         width="100%"
         height="100%"
       ></barrageVideoplayer>

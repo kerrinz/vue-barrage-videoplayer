@@ -68,12 +68,13 @@ export default {
 
 | parameter | required/optional | type | default | more |
 |---|---|---|---|---|
-| src | required | String | null | video source |
-| cover | optional | String | null | cover image source |
-| width | optional | String | 100% | video width with css code |
-| height | optional | String | 100% | video height with css cod |
-| speedList | optional | array | ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"]  | multiple play speed |
-| biBarrageXml | optional | String | null | barrages source with Bilibili XML format.Need to deal with cross-domain issues |
+| src | required | String | null | Video source. |
+| cover | optional | String | null | Cover image source. |
+| primaryColor | optional | String | "cornflowerblue" | Theme color. Can use css attributes：colorName、#Hex、rgb、rgba、HSL、HSLA |
+| width | optional | String | 100% | Video width with css code. |
+| height | optional | String | 100% | Video height with css cod. |
+| speedList | optional | array | ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"]  | Multiple play speed. |
+| biBarrageXml | optional | String | null | Barrages source with Bilibili XML format.Need to deal with cross-domain issues. |
 
 ### bug
 - [issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)

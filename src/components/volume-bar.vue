@@ -112,7 +112,7 @@ export default {
 .volume-current {
   position: absolute;
   bottom: 0;
-  background: rgb(0, 216, 220);
+  background-color: var(--primaryColor);
   pointer-events: none;
   border-radius: 10px;
 }

@@ -4,6 +4,7 @@
 <template>
   <div
     ref="area"
+    :style="`--primaryColor: ${primaryColor}`"
     :class="{'player-area': true, 'player-fullscreen': isFullscreen, 'cursor-lasting-static': isCursorStatic}"
   >
     <!-- 视频主体 -->
@@ -243,6 +244,11 @@ export default {
     src: {
       type: String,
       default: null,
+    },
+    // 主题色
+    primaryColor: {
+      type: String,
+      default: "cornflowerblue",
     },
     // 封面图的链接
     cover: {
@@ -701,7 +707,7 @@ export default {
   background: rgba(99, 99, 99, 0.8);
 }
 .speed-control .speed-control-list li.current {
-  color: #00d8d9;
+  color: var(--primaryColor);
 }
 .btn-volume:hover .volume-control {
   visibility: visible;

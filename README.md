@@ -71,6 +71,7 @@ export default {
 |---|---|---|---|---|
 | src | `必选` | String | null | 视频链接 |
 | cover | `可选` | String | null | 封面图的链接 |
+| primaryColor | `可选` | String | "cornflowerblue" | 主题色，可使用css属性值：颜色名称、#十六进制、rgb、rgba、HSL、HSLA |
 | width | `可选` | String | 100% | 视频宽度，对应css样式 |
 | height | `可选` | String | 100% | 视频高度，对应css样式 |
 | speed_list | `可选` | array | ["2.0", "1.5", "1.0", "0.75", "0.5", "0.25"]  | 倍速选择的列表 |

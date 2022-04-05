@@ -1,13 +1,20 @@
 <template>
-  <div class="player-barrage-wrap">
-    <div v-for="n in channelAmount" ref="channels" class="player-barrage-layer" :key="`channel-${(n -1)}`">
-    </div>
+  <div
+    ref="wrap"
+    class="player-barrage-wrap"
+    :style="`--animationPlayState: ${animationPlayState}`"
+  >
+    <div
+      v-for="n in channelAmount"
+      ref="channels"
+      class="player-barrage-layer"
+      :key="`channel-${n - 1}`"
+    ></div>
   </div>
 </template>
 
 <script>
   import axios from "axios";
-
   export default {
     name: "player-barrage-screen",
     props: {
@@ -31,14 +38,24 @@
       biBarrageXml: {
         type: String,
         default: null,
-      }
+      },
     },
     data() {
       return {
         barragedTag: 0, // 标记上一条弹幕的索引
         barrageList: [], // 弹幕列表
         channelAmount: 10, // 弹幕通道数量
+        animationPlayState: "uset",
+        scrollOccupy: [], // 滚动弹幕的占用情况
+        topOccupy: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 顶部占用，暂时10行（下标从最顶部部开始，0表示空闲，1表示占用）
+        bottomOccupy: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 底部占用（下标从最底部开始）
       };
+    },
+    beforeMount() {
+      // 初始化通道占用情况
+      for (let i = 0; i < this.channelAmount; i++) {
+        this.scrollOccupy.push(0)
+      }
     },
     mounted() {
       this.requestBarrageList();
@@ -49,8 +66,16 @@
           if (info.start_time < this.videoDom.currentTime) {
             // 标记下一条弹幕的索引
             this.barragedTag++;
-            if (info.mode <= 3) {
-              this.createBarrage(this.barrageList[this.barragedTag]);
+            switch (info.mode) {
+              case 0:case 1:case 2:case 3:
+                this.createBarrage(this.barrageList[this.barragedTag]);
+                break;
+              case 4: // 底部弹幕
+                this.createBottomFixedBarrage(this.barrageList[this.barragedTag]);
+                break;
+              case 5: // 顶部弹幕
+                this.createTopFixedBarrage(this.barrageList[this.barragedTag]);
+                break;
             }
           }
         }
@@ -99,20 +124,14 @@
           this.barrageList = array;
         });
       },
-      /* 新建一个弹幕
+      /* 新建一个滚动弹幕
        */
       createBarrage(info) {
         let dom = document.createElement("span");
         dom.innerText = info.content;
-        // dom.setAttribute("class", "barrage");
-        dom.style.animation = "barrage 5s linear 0s";
-        dom.style.left = "100%";
+        dom.setAttribute("class", "barrage barrage-scroll");
         dom.style.fontSize = `${info.font_size}px`;
         dom.style.color = `#${info.font_color}`;
-        dom.style.whiteSpace = "nowrap";
-        dom.style.textShadow =
-          "#000 1px 0px 1px, #000 0px 1px 1px, #000 0px -1px 1px, #000 -1px 0px 1px";
-        dom.style.position = "absolute";
         //动画过渡完之后清除掉弹幕dom
         dom.addEventListener("animationend", () => {
           dom.removeEventListener("animationend", this, false);
@@ -123,8 +142,68 @@
         });
         this.$refs["channels"][Math.round(Math.random() * 9)].append(dom);
       },
+      /* 新建一个底部固定弹幕
+       */
+      createBottomFixedBarrage(info) {
+        // 先寻找空闲的通道（底部倒数）
+        let index = 0;
+        for (let i = 0; i < this.bottomOccupy.length; i++) {
+          if(this.bottomOccupy[i] == 0) {
+            index = i;
+            break;
+          }
+        }
+        this.bottomOccupy[index] = 1; // 占用该通道
+        let dom = document.createElement("span");
+        dom.innerText = info.content;
+        dom.setAttribute("class", "barrage barrage-center barrage-bottom");
+        dom.style.fontSize = `${info.font_size}px`;
+        dom.style.bottom = `${(Number(info.font_size) + 4) * index}px`;
+        dom.style.color = `#${info.font_color}`;
+        // 之后清除掉弹幕dom
+        setTimeout(() =>{
+          dom.style.opacity = 0;
+          this.bottomOccupy[index] = 0; // 释放该通道
+          dom.parentNode.removeChild(dom);
+          dom.remove();
+          dom = null;
+        }, 5000);
+        this.$refs["wrap"].append(dom);
+      },
+      /* 新建一个顶部固定弹幕
+       */
+      createTopFixedBarrage(info) {
+        // 先寻找空闲的通道
+        let index = 0;
+        for (let i = 0; i < this.topOccupy.length; i++) {
+          if(this.topOccupy[i] == 0) {
+            index = i;
+            break;
+          }
+        }
+        this.topOccupy[index] = 1; // 占用该通道
+        let dom = document.createElement("span");
+        dom.innerText = info.content;
+        dom.setAttribute("class", "barrage barrage-center barrage-top");
+        dom.style.fontSize = `${info.font_size}px`;
+        dom.style.top = `${(Number(info.font_size) + 4) * index}px`;
+        dom.style.color = `#${info.font_color}`;
+        // 之后清除掉弹幕dom
+        setTimeout(() =>{
+          dom.style.opacity = 0;
+          this.topOccupy[index] = 0; // 释放该通道
+          dom.parentNode.removeChild(dom);
+          dom.remove();
+          dom = null;
+        }, 5000);
+        this.$refs["wrap"].append(dom);
+      }
     },
     watch: {
+      isPlaying: function () {
+        this.animationPlayState = this.isPlaying ? "unset" : "paused";
+        
+      },
       /* 更新弹幕
        */
       biBarrageXml: function () {
@@ -137,7 +216,7 @@
         let list = this.barrageList;
         let barrage_start = this.barrageTimelineStart;
         for (let n = 0; n < list.length; n++) {
-          if (list[n].start_time > barrage_start) {
+          if (list[n].start_time >= barrage_start) {
             this.barragedTag = n;
             break;
           }
@@ -166,9 +245,35 @@
     display: block;
     z-index: 1;
   }
+
+  .player-barrage-wrap >>> .barrage {
+    white-space: pre;
+    position: absolute;
+    text-shadow: #000 1px 0px 1px, #000 0px 1px 1px, #000 0px -1px 1px, #000 -1px 0px 1px;
+  }
+
+  .player-barrage-wrap >>> .barrage-center {
+    z-index: 1;
+    left: 50%;
+    transform: translateX(-50%);
+    -webkit-transform: translateX(-50%);
+    -o-transform: translateX(-50%);
+    -ms-transform: translateX(-50%);
+    -moz-transform: translateX(-50%);
+  }
+
+  .player-barrage-wrap >>> .barrage-bottom {
+    bottom: 0;
+  }
+
+  .player-barrage-wrap >>> .barrage-scroll {
+    left: 100%;
+    animation: horizontal-scroll 5s linear 0s;
+    animation-play-state: var(--animationPlayState)!important;
+  }
 </style>
 <style>
-  @keyframes barrage {
+  @keyframes horizontal-scroll {
     from {
       left: 100%;
       transform: translate3d(0, 0, 0);

@@ -13,6 +13,10 @@
 > Format：Only supports the `xml barrage format of Bilibili`. For details of the format, please refer to [this article](https://blog.csdn.net/Enderman_xiaohei/article/details/86659064)
 >
 > Operation: Currently, only the barrage can be displayed and no other operations can be performed.
+>
+> Display: Support scrolling barrages (still a little problem), top fixed barrages, bottom fixed barrages.
+>
+> Settings: waiting for development
 
 ### Preview
 - [Click to redirect](https://yleen.cc/files/works/barrage-video-player/)
@@ -21,7 +25,8 @@
 
 ### Plan
 - [X] Multiplayer coexistence
-- [X] Barrage (a small part developed)
+- [X] Barrage display
+- [ ] Barrage settings
 - [ ] Full screen with only web page
 - [ ] Upgrade Vue version to 3.x
 - [ ] Right click to view video data

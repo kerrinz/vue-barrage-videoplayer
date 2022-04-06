@@ -44,6 +44,7 @@
 2. 将`src/assets`文件夹复制到项目`src/`里面，确保`/src/assets/images/loading.svg`存在（该文件为缓冲时的加载图标）
 3. 在页面中引用`barrage-videoplayer.vue`
    - 注：项目需要引入`axios`
+4. 示例：
 ``` vue
 <template>
     <barrageVideoplayer

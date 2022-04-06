@@ -46,7 +46,7 @@
         barrageList: [], // 弹幕列表
         channelAmount: 10, // 弹幕通道数量
         animationPlayState: "uset",
-        scrollOccupy: [], // 滚动弹幕的占用情况
+        scrollOccupy: [], // 滚动弹幕的占用情况，0为空闲，>0的数为剩余的时间（毫秒），该时间经过后通道变为空闲（0）
         topOccupy: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 顶部占用，暂时10行（下标从最顶部部开始，0表示空闲，1表示占用）
         bottomOccupy: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 底部占用（下标从最底部开始）
       };
@@ -79,7 +79,16 @@
             }
           }
         }
-      }, 10);
+      }, 1);
+      // 滚动弹幕的计时器
+      setInterval(() => {
+        if (this.isPlaying) {
+          for (let i = 0; i < this.scrollOccupy.length; i++) {
+            if (this.scrollOccupy[i] > 100) this.scrollOccupy[i] -= 100;
+            else this.scrollOccupy[i] = 0;
+          }
+        }
+      }, 100);
     },
     methods: {
       /* 获取并处理排序弹幕列表
@@ -127,20 +136,32 @@
       /* 新建一个滚动弹幕
        */
       createBarrage(info) {
+        // 先寻找空闲的通道
+        let index = 0;
+        for (let i = 0; i < this.scrollOccupy.length; i++) {
+          if(this.scrollOccupy[i] == 0) {
+            index = i;
+            break;
+          }
+          if (i == this.scrollOccupy.length - 1) return; // 没有空闲的位置则不显示该弹幕
+        }
+        this.scrollOccupy[index] = 500 + Number(info.content.length) * 50;
         let dom = document.createElement("span");
         dom.innerText = info.content;
         dom.setAttribute("class", "barrage barrage-scroll");
-        dom.style.fontSize = `${info.font_size}px`;
+        dom.style.fontSize = `${info.font_size*0.8}px`;
         dom.style.color = `#${info.font_color}`;
         //动画过渡完之后清除掉弹幕dom
-        dom.addEventListener("animationend", () => {
+        dom.addEventListener("animationend", (e, ev) => {
+          console.log(e)
+          console.log(ev)
           dom.removeEventListener("animationend", this, false);
           dom.innerHTML = "";
           dom.parentNode.removeChild(dom);
           dom.remove();
           dom = null;
         });
-        this.$refs["channels"][Math.round(Math.random() * 9)].append(dom);
+        this.$refs["channels"][index].append(dom);
       },
       /* 新建一个底部固定弹幕
        */
@@ -157,8 +178,8 @@
         let dom = document.createElement("span");
         dom.innerText = info.content;
         dom.setAttribute("class", "barrage barrage-center barrage-bottom");
-        dom.style.fontSize = `${info.font_size}px`;
-        dom.style.bottom = `${(Number(info.font_size) + 4) * index}px`;
+        dom.style.fontSize = `${info.font_size*0.8}px`;
+        dom.style.bottom = `${(Number(info.font_size)*0.8 + 4) * index}px`;
         dom.style.color = `#${info.font_color}`;
         // 之后清除掉弹幕dom
         setTimeout(() =>{
@@ -186,7 +207,7 @@
         dom.innerText = info.content;
         dom.setAttribute("class", "barrage barrage-center barrage-top");
         dom.style.fontSize = `${info.font_size}px`;
-        dom.style.top = `${(Number(info.font_size) + 4) * index}px`;
+        dom.style.top = `${(Number(info.font_size)*0.8 + 4) * index}px`;
         dom.style.color = `#${info.font_color}`;
         // 之后清除掉弹幕dom
         setTimeout(() =>{
@@ -268,9 +289,9 @@
 
   .player-barrage-wrap >>> .barrage-scroll {
     left: 100%;
-    animation: horizontal-scroll 5s linear 0s;
+    animation: horizontal-scroll 7s linear 0s;
     animation-play-state: var(--animationPlayState)!important;
-  }
+  } 
 </style>
 <style>
   @keyframes horizontal-scroll {

@@ -12,9 +12,9 @@
 ### 弹幕支持情况
 > 格式：只支持B站xml弹幕格式，详细格式情况參考[这篇文章](https://blog.csdn.net/Enderman_xiaohei/article/details/86659064)
 >
-> 显示：支持滚动弹幕（暂时还有点问题）、顶部悬停弹幕、底部悬停弹幕
+> 显示：支持滚动弹幕、顶部悬停弹幕、底部悬停弹幕
 >
-> 设置项：暂无
+> 设置项：暂未支持
 
 ## 预览示例
 - [点击跳转预览](https://yleen.cc/files/works/barrage-video-player/)
@@ -23,7 +23,7 @@
 
 ## 计划表
 - [X] 多播放器共存
-- [X] 弹幕显示（滚动弹幕暂时还有点问题）
+- [X] 弹幕显示
 - [ ] 弹幕设置
 - [ ] 网页全屏
 - [ ] Vue升级到3.x版本
@@ -35,7 +35,8 @@
 ## 更新历史
 - 0.1.1 增加了对同时使用多个播放器的支持，以及封面图
 - 0.1.2 优化了遗留的部分烂代码
-- 0.2.0 支持显示滑动弹幕，预留导入外部弹幕文件功能
+- 0.2   支持显示滑动弹幕，预留导入外部弹幕文件功能
+- 0.3   优化滑动弹幕，支持顶部和底部的悬停弹幕，缩小默认字体大小
 
 ## 使用方式与示例
 可参考[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-videoplayer.vue) 文件

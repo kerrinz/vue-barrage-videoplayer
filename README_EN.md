@@ -14,7 +14,7 @@
 >
 > Operation: Currently, only the barrage can be displayed and no other operations can be performed.
 >
-> Display: Support scrolling barrages (still a little problem), top fixed barrages, bottom fixed barrages.
+> Display: Support scrolling barrages, top fixed barrages, bottom fixed barrages.
 >
 > Settings: waiting for development
 
@@ -37,7 +37,8 @@
 ### Updated history：
 - 0.1.1 Added support for using multiple players at the same time; Support cover picture.
 - 0.1.2 Optimized code.
-- 0.2.0 Supports the display of sliding bullet chatter, and the function of importing external bullet chatter files is reserved.
+- 0.2   Supports the display of sliding bullet chatter, and the function of importing external bullet chatter files is reserved.
+- 0.3   Optimize the sliding barrage, support the hover barrage at the top and bottom and reduce the default font size.
 
 ### How to use
 [preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-videoplayer.vue)

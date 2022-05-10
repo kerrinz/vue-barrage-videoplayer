@@ -152,9 +152,7 @@
         dom.style.fontSize = `${info.font_size*0.8}px`;
         dom.style.color = `#${info.font_color}`;
         //动画过渡完之后清除掉弹幕dom
-        dom.addEventListener("animationend", (e, ev) => {
-          console.log(e)
-          console.log(ev)
+        dom.addEventListener("animationend", () => {
           dom.removeEventListener("animationend", this, false);
           dom.innerHTML = "";
           dom.parentNode.removeChild(dom);

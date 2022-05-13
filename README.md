@@ -79,6 +79,7 @@ export default {
 | height | `可选` | String | 100% | 视频高度，对应css样式 |
 | speed_list | `可选` | array | ["2.0", "1.5", "1.25", "1.0", "0.75", "0.5"]  | 倍速选择的列表 |
 | biBarrageXml | `可选` | String | null | 弹幕链接，使用的是B站XML风格，需处理跨域问题 |
+
 （如果不需要封面则不配置cover，不需要弹幕功能则不配置biBarrageXml）
 
 ### bug反馈

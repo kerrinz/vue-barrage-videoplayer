@@ -9,8 +9,7 @@
 >
 > 键盘控制：F全屏，↑↓键调整音量，←→调整进度，Space暂停/继续
 >
-> 视频格式：仅支持原生Video所支持的视频格式，如果需要额外支持flv、mpegts, m2ts等格式，需要引入第三方库，例如[mpegts.js](https://github.com/xqq/mpegts.js)；
-> 其他：可以通过ref的形式获取播放器的视频dom，例如配置`ref="player"`，通过`this.$refs.player[0].videoDom`得到视频dom，便于使用第三方库拓展。
+> 视频格式：仅支持原生Video所支持的视频格式，如果需要额外支持flv、mpegts, m2ts等格式，需要引入第三方库，例如[mpegts.js](https://github.com/xqq/mpegts.js)；另外，可以通过ref的形式获取播放器的视频dom，例如配置`ref="player"`，通过`this.$refs.player[0].videoDom`得到视频dom，便于使用第三方库拓展。
 
 ### 弹幕支持情况
 > 格式：只支持B站xml弹幕格式，详细格式情况參考[这篇文章](https://blog.csdn.net/Enderman_xiaohei/article/details/86659064)

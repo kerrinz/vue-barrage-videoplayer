@@ -8,6 +8,9 @@
 > 主要功能：播放、音量控制、倍速、进度条控制、全屏、弹幕（部分）
 >
 > 键盘控制：F全屏，↑↓键调整音量，←→调整进度，Space暂停/继续
+>
+> 视频格式：仅支持原生Video所支持的视频格式，如果需要额外支持flv、mpegts, m2ts等格式，需要引入第三方库，例如[mpegts.js](https://github.com/xqq/mpegts.js)；
+> 其他：可以通过ref的形式获取播放器的视频dom，例如配置`ref="player"`，通过`this.$refs.player[0].videoDom`得到视频dom，便于使用第三方库拓展。
 
 ### 弹幕支持情况
 > 格式：只支持B站xml弹幕格式，详细格式情况參考[这篇文章](https://blog.csdn.net/Enderman_xiaohei/article/details/86659064)
@@ -44,13 +47,11 @@
 2. 将`src/assets`文件夹复制到项目`src/`里面，确保`/src/assets/images/loading.svg`存在（该文件为缓冲时的加载图标）
 3. 在页面中引用`barrage-videoplayer.vue`
    - 注：项目需要引入`axios`
-4. 示例：
+4. 简单示例：
 ``` vue
 <template>
     <barrageVideoplayer
         :src="video_src"
-        :cover="cover"
-        :biBarrageXml="biBarrageXml"
         width="100%"
         height="100%"
     ></barrageVideoplayer>
@@ -62,8 +63,6 @@ export default {
   data() {
     return {
       video_src: "",
-      cover: "",
-      biBarrageXml: "",
     };
   },
 }
@@ -81,10 +80,11 @@ export default {
 | height | `可选` | String | 100% | 视频高度，对应css样式 |
 | speed_list | `可选` | array | ["2.0", "1.5", "1.25", "1.0", "0.75", "0.5"]  | 倍速选择的列表 |
 | biBarrageXml | `可选` | String | null | 弹幕链接，使用的是B站XML风格，需处理跨域问题 |
+（如果不需要封面则不配置cover，不需要弹幕功能则不配置biBarrageXml）
 
 ### bug反馈
 - 提[issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)
-- 本人首页的联系方式，邮箱优先
+- 或者本人首页的联系方式，不急的话邮箱优先
 
 ---
 

@@ -1,8 +1,11 @@
 <template>
   <div class="container">
     <article>
-      注：由于mpegts.js的限制，flv仅支持h.264视频+aac音频编码。
-      <p>在此提供ffmpeg转码命令参考：ffmpeg -i test.flv -vcodec libx264 -c:a aac test.flv</p>
+      注：由于mpegts.js的限制，flv仅支持h.264视频+aac音频编码；并且需要处理跨域问题。
+      <p>
+        在此提供ffmpeg转码命令参考：ffmpeg -i test.flv -vcodec libx264 -c:a aac
+        test.flv
+      </p>
     </article>
     <div class="video-wrap" v-for="n in 1" :key="n">
       <!-- 核心组件 -->
@@ -46,19 +49,24 @@ export default {
   },
   data() {
     return {
-      videoSrc: "https://yleen.cc/files/videos/output.mp4", // 视频链接
-      cover: "https://yleen.cc/files/images/liuhua1.png", // 可选，封面图的链接
-      biBarrageXml: "/files/danmu_bili/danmaku.xml", // 可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
+      videoSrc: "/files/videos/output.flv", // 视频链接，mpegts需要处理跨域
+      cover: null, // 可选，封面图的链接
+      biBarrageXml: null, // 可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
       mpegtsPlayer: null,
     };
   },
+  mounted() {
+    this.loadVideoSrc(this.videoSrc, this.videoSrc);
+  },
+  beforeDestroy() {
+    if (this.mpegtsPlayer != null) this.mpegtsPlayer.destroy();
+  },
   methods: {
-    /* 选择本地视频文件
+    /**
+     * filename文件名或者文件链接
      */
-    onInputFileChange(e) {
-      this.cover = null; // 去掉封面
-      let newSrc = URL.createObjectURL(e.currentTarget.files[0]);
-      let suffix = this.getFileSuffixLowerCase(e.currentTarget.files[0].name); // 文件后缀名
+    loadVideoSrc(filename, newSrc) {
+      let suffix = this.getFileSuffixLowerCase(filename); // 文件后缀名
       if (suffix in videoTypes && mpegts.isSupported()) {
         // 处理不受原生支持的视频格式
         if (this.mpegtsPlayer != null) this.mpegtsPlayer.destroy();
@@ -70,10 +78,16 @@ export default {
         this.mpegtsPlayer.attachMediaElement(this.$refs.player[0].videoDom); // 挂载
         this.mpegtsPlayer.load();
       } else {
-        // mpegtsPlayer.destroy();
         if (this.mpegtsPlayer != null) this.mpegtsPlayer.detachMediaElement();
         this.videoSrc = newSrc;
       }
+    },
+    /* 选择本地视频文件
+     */
+    onInputFileChange(e) {
+      this.cover = null; // 去掉封面
+      let newSrc = URL.createObjectURL(e.currentTarget.files[0]);
+      this.loadVideoSrc(e.currentTarget.files[0].name, newSrc);
     },
     /* 选择本地弹幕文件
      */

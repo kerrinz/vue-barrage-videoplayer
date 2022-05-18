@@ -1,5 +1,5 @@
 const path = require('path')
-function resolve (dir) {
+function resolve(dir) {
   return path.join(__dirname, dir)
 }
 let publicPath = process.env.NODE_ENV === 'prodution' ? '/' : './';
@@ -18,12 +18,12 @@ module.exports = {
   devServer: {
     // 关闭host检查
     disableHostCheck: true,
-/*
-    overlay: {
-      warnings: true,
-      errors: true
-    },
-*/
+    /*
+        overlay: {
+          warnings: true,
+          errors: true
+        },
+    */
     port: 8080,
     proxy: {
       '/api_bilibili': {
@@ -35,12 +35,12 @@ module.exports = {
           '^/api_bilibili': '/'
         }
       },
-      // '/': {
-      //   target: 'https://yleen.cc',
-      //   secure: true,
-      //   ws: false,
-      //   changeOrigin: true
-      // },
+      '/files': {
+        target: 'https://yleen.cc',
+        secure: true,
+        ws: false,
+        changeOrigin: true,
+      },
     },
   },
 }

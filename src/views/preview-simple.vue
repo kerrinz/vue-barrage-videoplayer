@@ -12,18 +12,26 @@
         height="100%"
       ></barrageVideoplayer>
     </div>
-    <div class="video-src">视频地址：{{ videoSrc }}</div>
-    <div class="upload-btn">
+    <div class="video-src">
+      视频地址：<input :value="videoSrc" @input="onChangeInputSrc" type="text" />
+      <button
+      @click="videoSrc = inputSrc"
+        class="upload-btn"
+      >
+        确定
+      </button>
+    </div>
+    <button class="upload-btn">
       <input type="file" @change="onInputFileChange" />
       <span>选择本地视频</span>
-    </div>
-    <div class="upload-btn">
+    </button>
+    <button class="upload-btn">
       <input type="file" @change="onInputBarrageChange" />
       <span>导入本地XML弹幕文件</span>
-    </div>
-    <div class="upload-btn" @click="clearBarrage">
+    </button>
+    <button class="upload-btn" @click="clearBarrage">
       <span>清空弹幕</span>
-    </div>
+    </button>
   </div>
 </template>
 
@@ -39,25 +47,38 @@ export default {
       videoSrc: "https://yleen.cc/files/videos/output.mp4", // 视频链接
       cover: "https://yleen.cc/files/images/liuhua1.png", // 可选，封面图的链接
       biBarrageXml: "/files/danmu_bili/danmaku.xml", // 可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
+      inputSrc: null,
     };
   },
+  created(){
+    this.inputSrc = this.videoSrc;
+  },
   methods: {
-    /* 选择本地视频文件
+    /**
+     * 选择本地视频文件
      */
     onInputFileChange(e) {
       this.cover = null; // 去掉封面
       this.videoSrc = URL.createObjectURL(e.currentTarget.files[0]);
     },
-    /* 选择本地弹幕文件
+    /** 
+     * 选择本地弹幕文件
      */
     onInputBarrageChange(e) {
       this.biBarrageXml = URL.createObjectURL(e.currentTarget.files[0]);
     },
-    /* 清空弹幕
+    /**
+     * 清空弹幕
      */
     clearBarrage() {
       this.biBarrageXml = null;
     },
+    /**
+     * 手动输入视频链接
+     */
+    onChangeInputSrc(e) {
+      this.inputSrc = e.target.value;
+    }
   },
 };
 </script>
@@ -77,6 +98,11 @@ export default {
 .video-src {
   margin: 0.4rem 0;
 }
+.video-src input {
+  display: inline-block;
+  width: 400px;
+  max-width: 90%;
+}
 .upload-btn {
   display: inline-block;
   position: relative;
@@ -94,7 +120,7 @@ export default {
   background: #5c9bb6;
   color: #fafafa;
 }
-.upload-btn input {
+.upload-btn > input {
   position: absolute;
   left: 0;
   top: 0;

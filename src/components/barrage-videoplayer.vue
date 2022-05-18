@@ -576,7 +576,7 @@ export default {
   box-shadow: 0 0 4px #bbbbbb;
   background: rgba(255, 255, 255, 0.8);
 }
-.player-paused-state svg {
+.player-paused-state > svg {
   margin: 0.4rem 1rem;
 }
 .player-controls-container {
@@ -640,6 +640,7 @@ export default {
 }
 .player-controls-btn .player-controls-icon {
   height: 22px;
+  display: block;
   transition: height 0.3s;
 }
 .player-controls-btn svg path {

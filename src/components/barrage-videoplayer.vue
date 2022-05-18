@@ -624,10 +624,12 @@ export default {
 .player-controls-bottom-left {
   padding: 0.6rem 0.4rem;
   display: inline-flex;
+  align-items: center;
 }
 .player-controls-bottom-right {
   display: inline-flex;
   padding: 0.6rem 0.4rem;
+  align-items: center;
 }
 .player-controls-btn {
   position: relative;

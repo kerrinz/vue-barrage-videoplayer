@@ -161,4 +161,9 @@ article {
   bottom: 0;
   cursor: pointer;
 }
+@media (max-width: 567px) {
+  .video-wrap {
+    font-size: 12px;
+  }
+}
 </style>

@@ -639,7 +639,7 @@ export default {
   transition: color 0.3s;
 }
 .player-controls-btn .player-controls-icon {
-  height: 22px;
+  height: 1.5rem;
   display: block;
   transition: height 0.3s;
 }
@@ -671,7 +671,7 @@ export default {
   transform: translate(-50%, -200%);
 }
 .btn-fullscreen-hint {
-  margin-left: -16px;
+  margin-left: -1rem;
 }
 .player-time {
   display: inline-block;

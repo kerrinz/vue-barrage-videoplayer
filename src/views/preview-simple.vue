@@ -13,13 +13,12 @@
       ></barrageVideoplayer>
     </div>
     <div class="video-src">
-      视频地址：<input :value="videoSrc" @input="onChangeInputSrc" type="text" />
-      <button
-      @click="videoSrc = inputSrc"
-        class="upload-btn"
-      >
-        确定
-      </button>
+      视频地址：<input
+        :value="videoSrc"
+        @input="onChangeInputSrc"
+        type="text"
+      />
+      <button @click="videoSrc = inputSrc" class="upload-btn">确定</button>
     </div>
     <button class="upload-btn">
       <input type="file" @change="onInputFileChange" />
@@ -50,7 +49,7 @@ export default {
       inputSrc: null,
     };
   },
-  created(){
+  created() {
     this.inputSrc = this.videoSrc;
   },
   methods: {
@@ -61,7 +60,7 @@ export default {
       this.cover = null; // 去掉封面
       this.videoSrc = URL.createObjectURL(e.currentTarget.files[0]);
     },
-    /** 
+    /**
      * 选择本地弹幕文件
      */
     onInputBarrageChange(e) {
@@ -78,7 +77,7 @@ export default {
      */
     onChangeInputSrc(e) {
       this.inputSrc = e.target.value;
-    }
+    },
   },
 };
 </script>
@@ -136,5 +135,10 @@ export default {
   right: 0;
   bottom: 0;
   cursor: pointer;
+}
+@media (max-width: 567px) {
+  .video-wrap {
+    font-size: 12px;
+  }
 }
 </style>

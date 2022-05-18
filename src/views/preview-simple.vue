@@ -72,6 +72,7 @@ export default {
   width: 100%;
   max-height: 600px;
   background: #000;
+  box-shadow: #aaa 0 0 4px;
 }
 .video-src {
   margin: 0.4rem 0;

@@ -1,5 +1,9 @@
 <template>
   <div class="container">
+    <article>
+      注：由于mpegts.js的限制，flv仅支持h.264视频+aac音频编码。
+      <p>在此提供ffmpeg转码命令参考：ffmpeg -i test.flv -vcodec libx264 -c:a aac test.flv</p>
+    </article>
     <div class="video-wrap" v-for="n in 1" :key="n">
       <!-- 核心组件 -->
       <barrageVideoplayer
@@ -96,11 +100,15 @@ export default {
   margin: auto;
   max-width: 1000px;
 }
+article {
+  text-align: left;
+}
 .video-wrap {
   display: inline-flex;
   width: 100%;
   max-height: 600px;
   background: #000;
+  box-shadow: #aaa 0 0 4px;
 }
 .video-src {
   margin: 0.4rem 0;

@@ -1,17 +1,13 @@
 <template>
   <div id="app">
-    <previewVideoplayer></previewVideoplayer>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-import previewVideoplayer from "./views/preview-videoplayer.vue";
-
 export default {
   name: "App",
-  components: {
-    previewVideoplayer,
-  },
+  components: {},
   data() {
     return {};
   },
@@ -28,6 +24,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+  font-size: 14px;
 }
 body,
 div {

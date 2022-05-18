@@ -41,7 +41,7 @@
 - 0.3   优化滑动弹幕，支持顶部和底部的悬停弹幕，缩小默认字体大小
 
 ## 使用方式与示例
-可参考[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-videoplayer.vue) 文件
+可参考简单示例[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-simple.vue) 文件
 1. 将`src/components`下的四个文件复制到你的项目里，确保这四个文件保持在同一目录；
 2. 将`src/assets`文件夹复制到项目`src/`里面，确保`/src/assets/images/loading.svg`存在（该文件为缓冲时的加载图标）
 3. 在页面中引用`barrage-videoplayer.vue`
@@ -85,6 +85,9 @@ export default {
 ### bug反馈
 - 提[issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)
 - 或者本人首页的联系方式，不急的话邮箱优先
+
+### 引用
+- vue、axios、mpegts.js
 
 ---
 

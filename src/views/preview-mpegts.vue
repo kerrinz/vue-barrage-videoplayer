@@ -3,6 +3,7 @@
     <div class="video-wrap" v-for="n in 1" :key="n">
       <!-- 核心组件 -->
       <barrageVideoplayer
+        ref="player"
         :src="videoSrc"
         :cover="cover"
         :biBarrageXml="biBarrageXml"
@@ -20,12 +21,22 @@
       <input type="file" @change="onInputBarrageChange" />
       <span>导入本地XML弹幕文件</span>
     </div>
+    <div class="upload-btn" @click="clearBarrage">
+      <span>清空弹幕</span>
+    </div>
   </div>
 </template>
 
 <script>
-  import barrageVideoplayer from "../components/barrage-videoplayer.vue";
-  export default {
+import barrageVideoplayer from "../components/barrage-videoplayer.vue";
+import mpegts from "mpegts.js"; // mpegts库，用于播放部分不受支持的视频类型
+const videoTypes = {
+  flv: "flv",
+  ts: "mpegts",
+  m2ts: "m2ts",
+}; // 文件后缀对应视频类型
+
+export default {
   components: {
     barrageVideoplayer,
   },
@@ -33,19 +44,48 @@
     return {
       videoSrc: "https://yleen.cc/files/videos/output.mp4", // 视频链接
       cover: "https://yleen.cc/files/images/liuhua1.png", // 可选，封面图的链接
-      biBarrageXml: "/files/danmu_bili/danmaku.xml", // 获可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
+      biBarrageXml: "/files/danmu_bili/danmaku.xml", // 可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
+      mpegtsPlayer: null,
     };
   },
   methods: {
     /* 选择本地视频文件
      */
     onInputFileChange(e) {
-      this.videoSrc = URL.createObjectURL(e.currentTarget.files[0]);
+      this.cover = null; // 去掉封面
+      let newSrc = URL.createObjectURL(e.currentTarget.files[0]);
+      let suffix = this.getFileSuffixLowerCase(e.currentTarget.files[0].name); // 文件后缀名
+      if (suffix in videoTypes && mpegts.isSupported()) {
+        // 处理不受原生支持的视频格式
+        if (this.mpegtsPlayer != null) this.mpegtsPlayer.destroy();
+        this.mpegtsPlayer = mpegts.createPlayer({
+          type: videoTypes[suffix], // 支持mpegts, m2ts, flv
+          isLive: false, // 是否直播推流模式
+          url: newSrc, // 链接
+        });
+        this.mpegtsPlayer.attachMediaElement(this.$refs.player[0].videoDom); // 挂载
+        this.mpegtsPlayer.load();
+      } else {
+        // mpegtsPlayer.destroy();
+        if (this.mpegtsPlayer != null) this.mpegtsPlayer.detachMediaElement();
+        this.videoSrc = newSrc;
+      }
     },
     /* 选择本地弹幕文件
      */
     onInputBarrageChange(e) {
       this.biBarrageXml = URL.createObjectURL(e.currentTarget.files[0]);
+    },
+    /* 获取文件后缀，小写字母
+     */
+    getFileSuffixLowerCase(filename) {
+      let arr = filename.split(".");
+      return arr[arr.length - 1].toLocaleLowerCase();
+    },
+    /* 清空弹幕
+     */
+    clearBarrage() {
+      this.biBarrageXml = null;
     },
   },
 };

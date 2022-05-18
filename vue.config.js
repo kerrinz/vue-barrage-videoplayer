@@ -35,12 +35,12 @@ module.exports = {
           '^/api_bilibili': '/'
         }
       },
-      '/': {
-        target: 'https://yleen.cc',
-        secure: true,
-        ws: false,
-        changeOrigin: true
-      },
+      // '/': {
+      //   target: 'https://yleen.cc',
+      //   secure: true,
+      //   ws: false,
+      //   changeOrigin: true
+      // },
     },
   },
 }

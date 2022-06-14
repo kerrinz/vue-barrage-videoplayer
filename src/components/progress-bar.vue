@@ -12,7 +12,7 @@
     @mousemove="move"
     @mouseup="up"
   >
-    <div class="progress-full" :style="{height: height}">
+    <div ref="progress-full" class="progress-full" :style="{height: height}">
       <div class="progress-current" :style="{width: currentProgress * 100 + '%'}"></div>
     </div>
   </div>
@@ -42,24 +42,46 @@ export default {
       current_width_px: 0, // 当前进度条的像素长度
       init_clientX: 0, //初始进度的偏移量，相对于视口
       dom_full: null, //完整进度条的dom，即进度条背景
+      listeners: [], // 事件监听列表，列表项格式：{eventName: String, element: ELement, method: Function}
+      intervals: [], // 定时器列表，列表项格式：Function
     };
   },
   mounted() {
     //初始化一些固定数据
-    let dom_full = this.$el.getElementsByClassName("progress-full")[0];
+    let dom_full = this.$refs["progress-full"];
     this.dom_full = dom_full;
     //绑定全局监听器
-    window.addEventListener("mousemove", (e) => {
-      if (this.is_mousedown_progress) {
-        this.move(e);
-      }
-    });
-    window.addEventListener("mouseup", (e) => {
-      this.up(e);
-    });
+    let move = {
+      eventName: "mousemove",
+      element: window,
+      method: function(e) {
+        if (this.is_mousedown_progress) {
+          this.move(e);
+        }
+      }.bind(this),
+    }
+    let up = {
+      eventName: "mouseup",
+      element: window,
+      method: function(e) {
+        this.up(e);
+      }.bind(this),
+    }
+    this.listeners.push(move);
+    this.listeners.push(up);
+    window.addEventListener("mousemove", move.method, false);
+    window.addEventListener("mouseup", up.method, false);
   },
   beforeDestroy() {
-    //
+    // 销毁事件监听器
+    for (let index in this.listeners) {
+      let item = this.listeners[index];
+      item.element.removeEventListener(item.eventName, item.method);
+    }
+    // 销毁定时器
+    for (let index in this.intervals) {
+      clearInterval(this.intervals[index])
+    }
   },
   methods: {
     down(e) {

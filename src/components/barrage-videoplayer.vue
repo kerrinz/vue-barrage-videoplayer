@@ -321,6 +321,8 @@ export default {
       currentTimeFormat: "00:00", // 当前播放进度的文字
       fullTimeFormat: "00:00", // 视频总长度的文字
       barrageTimelineStart: 0, // 弹幕时间轴的起始时间点（手动调整进度条触发更新）
+      listeners: [], // 事件监听列表，列表项格式：{eventName: String, element: ELement, method: Function}
+      intervals: [], // 定时器列表，列表项格式：Function
     };
   },
   created() {},
@@ -328,7 +330,7 @@ export default {
     this.videoDom = this.$refs.video;
     this.videoDom.focus({preventScroll: true});
     this.pictureInPictureEnabled = document.pictureInPictureEnabled && !this.videoDom.disablePictureInPicture;
-    setInterval(() => {
+    let interval = function() {
       // 定时更新进度条
       if (this.isPlaying && !this.isMousedownProgress) {
         this.currentProgress =
@@ -365,16 +367,48 @@ export default {
       }
       // 根据视频的readyState判断下一帧是否已加载，并控制loading的显示
       this.isShowLoading = this.videoDom.readyState < 3;
-    }, 1000);
-    // 视频dom监听器，用于控制鼠标的显示
-    this.videoDom.addEventListener("mousemove", () => {
-      this.isCursorStatic = false;
-      this.timeoutControlsHint = 2000;
-    });
-    // 监听全屏事件的变化，保存数据
-    window.addEventListener("fullscreenchange", () => {
-      this.isFullscreen = this.checkIsFullScreen();
-    });
+    }.bind(this);
+    this.intervals.push(interval);
+    setInterval(interval, 1000);
+    let mouseMove = {
+      eventName: "mousemove",
+      element: this.videoDom,
+      method: function() {
+        this.isCursorStatic = false;
+        this.timeoutControlsHint = 2000;
+      }.bind(this),
+    } // 视频dom监听器，用于控制鼠标的显示
+    let fullscreenchange = {
+      eventName: "fullscreenchange",
+      element: window,
+      method: function() {
+        this.isFullscreen = this.checkIsFullScreen();
+      }.bind(this),
+    } // 监听全屏事件的变化，保存数据
+    let pic = {
+      eventName: "leavepictureinpicture",
+      element: this.videoDom,
+      method: function() {
+        this.isPictureInPicture = false;
+      }.bind(this),
+    } // 画中画监听
+    this.listeners.push(mouseMove);
+    this.listeners.push(fullscreenchange);
+    this.listeners.push(pic);
+    this.videoDom.addEventListener("mousemove", mouseMove.method, false);
+    window.addEventListener("fullscreenchange", fullscreenchange.method, false);
+    this.videoDom.addEventListener("leavepictureinpicture", pic.method, false);
+  },
+  beforeDestroy() {
+    // 销毁事件监听器
+    for (let index in this.listeners) {
+      let item = this.listeners[index];
+      item.element.removeEventListener(item.eventName, item.method);
+    }
+    // 销毁定时器
+    for (let index in this.intervals) {
+      clearInterval(this.intervals[index])
+    }
   },
   methods: {
     /* 切换播放状态

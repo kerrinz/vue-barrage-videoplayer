@@ -39,7 +39,7 @@
 - 0.1.2 优化了遗留的部分烂代码
 - 0.2   支持显示滑动弹幕，预留导入外部弹幕文件功能
 - 0.3   优化滑动弹幕，支持顶部和底部的悬停弹幕，缩小默认字体大小
-- 0.3.1 添加画中画、网页全屏的支持，优化部分图标和样式
+- 0.3.1 添加画中画、网页全屏的支持；优化事件监听器回收；修改部分图标和样式
 
 ## 使用方式与示例
 可参考简单示例[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-simple.vue) 文件

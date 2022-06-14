@@ -39,7 +39,7 @@
 - 0.1.2 Optimized code.
 - 0.2   Supports the display of sliding bullet chatter, and the function of importing external bullet chatter files is reserved.
 - 0.3   Optimize the sliding barrage, support the hover barrage at the top and bottom and reduce the default font size.
-- 0.3.1 Add picture in picture, page-fullscreen. Update some icons and style.
+- 0.3.1 Add picture in picture, page-fullscreen. Remove event listeners before destroy. Update some icons and style.
 
 ### How to use
 [preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-videoplayer.vue)

@@ -12,7 +12,7 @@
     @mousemove.stop="move"
     @mouseup.stop="up"
   >
-    <div class="volume-full" :style="{width: width, height: height}">
+    <div ref="volume-full" class="volume-full" :style="{width: width, height: height}">
       <div
         class="volume-current volume-ball"
         :style="{width: '100%', height: currentVolume * 100 + '%'}"
@@ -45,18 +45,44 @@ export default {
       full_height: null, //音量条的总高度（像素）
       dom_volume_full: null, //总音量条的dom
       full_bar_client_top: 0, //满载的音量条相对于视口的高度
+      listeners: [], // 事件监听列表，列表项格式：{eventName: String, element: ELement, method: Function}
+      intervals: [], // 定时器列表，列表项格式：Function
     };
   },
   mounted() {
-    this.dom_volume_full = this.$el.getElementsByClassName("volume-full")[0];
-    window.addEventListener("mousemove", (e) => {
-      if (this.is_click_bar) {
-        this.move(e);
-      }
-    });
-    window.addEventListener("mouseup", (e) => {
-      this.up(e);
-    });
+    this.dom_volume_full = this.$refs["volume-full"];
+    //绑定全局监听器
+    let move = {
+      eventName: "mousemove",
+      element: window,
+      method: function(e) {
+        if (this.is_click_bar) {
+          this.move(e);
+        }
+      }.bind(this),
+    }
+    let up = {
+      eventName: "mouseup",
+      element: window,
+      method: function(e) {
+        this.up(e);
+      }.bind(this),
+    }
+    this.listeners.push(move);
+    this.listeners.push(up);
+    window.addEventListener("mousemove", move.method, false);
+    window.addEventListener("mouseup", up.method, false);
+  },
+  beforeDestroy() {
+    // 销毁事件监听器
+    for (let index in this.listeners) {
+      let item = this.listeners[index];
+      item.element.removeEventListener(item.eventName, item.method);
+    }
+    // 销毁定时器
+    for (let index in this.intervals) {
+      clearInterval(this.intervals[index])
+    }
   },
   methods: {
     down(e) {

@@ -28,7 +28,7 @@ export default {
     },
     height: {
       type: String,
-      default: "4px",
+      default: "3px",
     },
     // 当前进度，范围0-1
     currentProgress: {
@@ -113,7 +113,7 @@ export default {
   position: relative;
   display: inline-block;
   width: 100%;
-  background: rgb(201, 201, 201);
+  background: rgba(255, 255, 255, 0.33);
   transition: height 0.3s;
 }
 .progress-current {

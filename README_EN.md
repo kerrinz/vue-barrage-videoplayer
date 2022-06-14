@@ -5,7 +5,7 @@
 > A vue component of video player with barrages. Apply to: `PC web` and `static video file`
 
 ### Functional Support
-> Mainly support: playback, volume control, multiple speed, progress bar control, full screen, barrages(partial)
+> Mainly support: playback, volume control, multiple speed, progress bar control, fullscreen and page-fullcreen, picture in picture, barrages(partial)
 >
 > Keyboard control：F fullscreen，↑↓ volume，←→ progress bar，Space pause/resume
 
@@ -31,7 +31,7 @@
 - [ ] Upgrade Vue version to 3.x
 - [ ] Right click to view video data
 - [ ] Multilingual support
-- [ ] push stream video, websocket
+- [ ] live push stream video
 - [ ] for mobile web
 
 ### Updated history：
@@ -39,6 +39,7 @@
 - 0.1.2 Optimized code.
 - 0.2   Supports the display of sliding bullet chatter, and the function of importing external bullet chatter files is reserved.
 - 0.3   Optimize the sliding barrage, support the hover barrage at the top and bottom and reduce the default font size.
+- 0.3.1 Add picture in picture, page-fullscreen. Update some icons and style.
 
 ### How to use
 [preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-videoplayer.vue)

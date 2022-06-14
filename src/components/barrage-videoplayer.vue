@@ -5,7 +5,7 @@
   <div
     ref="area"
     :style="`--primaryColor: ${primaryColor}`"
-    :class="{'player-area': true, 'player-fullscreen': isFullscreen, 'cursor-lasting-static': isCursorStatic}"
+    :class="{'player-area': true, 'player-full-flxed': isPageFullscreen, 'cursor-lasting-static': isCursorStatic}"
   >
     <!-- 视频主体 -->
     <video
@@ -73,7 +73,7 @@
             v-on:updateProgress="updateProgressByClickBar"
             v-on:getMouseDownStatus="getMouseDownStatusOfProgressBar"
             width="100%"
-            height="4px"
+            height="3px"
           ></progressBar>
         </div>
         <div class="player-controls-bottom">
@@ -161,6 +161,62 @@
                 </div>
               </div>
             </div>
+            <div v-if="pictureInPictureEnabled" class="player-controls-btn cursor-pointer" @click="togglePictureInPicture">
+              <svg v-show="!isPictureInPicture" t="1655131432014" class="player-controls-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="23193" width="22" height="20"><path d="M768 213.333333H256a85.333333 85.333333 0 0 0-85.333333 85.333334v426.666666a85.333333 85.333333 0 0 0 85.333333 85.333334h170.666667a42.666667 42.666667 0 1 1 0 85.333333H256a170.666667 170.666667 0 0 1-170.666667-170.666667V298.666667a170.666667 170.666667 0 0 1 170.666667-170.666667h512a170.666667 170.666667 0 0 1 170.666667 170.666667v128a42.666667 42.666667 0 1 1-85.333334 0V298.666667a85.333333 85.333333 0 0 0-85.333333-85.333334z m-128 341.333334a128 128 0 0 0-128 128v85.333333a128 128 0 0 0 128 128h170.666667a128 128 0 0 0 128-128v-85.333333a128 128 0 0 0-128-128h-170.666667z" p-id="23194" data-spm-anchor-id="a313x.7781069.0.i55" class="" fill="#ffffff"></path></svg>
+              <svg v-show="isPictureInPicture" t="1655188154787" class="player-controls-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="1999" width="22" height="20"><path d="m768,213.33333l-512,0a85.33333,85.33333 0 0 0 -85.33333,85.33334l0,426.66666a85.33333,85.33333 0 0 0 85.33333,85.33334l170.66667,0a42.66667,42.66667 0 1 1 0,85.33333l-170.66667,0a170.66667,170.66667 0 0 1 -170.66667,-170.66667l0,-426.66666a170.66667,170.66667 0 0 1 170.66667,-170.66667l512,0a170.66667,170.66667 0 0 1 170.66667,170.66667l0,128a42.66667,42.66667 0 1 1 -85.33334,0l0,-128a85.33333,85.33333 0 0 0 -85.33333,-85.33334zm-128,341.33334a128,128 0 0 0 -128,128l0,85.33333a128,128 0 0 0 128,128l170.66667,0a128,128 0 0 0 128,-128l0,-85.33333a128,128 0 0 0 -128,-128l-170.66667,0z"/><g stroke="null"><g stroke="null" transform="matrix(0.6896517266997474,0,0,0.6896517266997474,-10241.200782450309,-10001.206060939305) "><rect stroke="null" x="15122.523407" y="14826.656681" width="582" height="402" fill="none"/></g><g stroke="null" transform="matrix(0.6896517266997474,0,0,0.6896517266997474,-10241.200782450309,-10001.206060939305) "><path stroke="null" d="m15503.523407,14924.856681l-161.8,0c-66.2,0 -120,53.8 -120,120l0,161.8c0,22.1 17.9,40 40,40s40,-17.9 40,-40l0,-144.4l169.8,169.8c7.8,7.8 18,11.7 28.3,11.7c10.2,0 20.5,-3.9 28.3,-11.7c15.6,-15.6 15.6,-40.9 0,-56.6l-170.7,-170.6l146.1,0c22.1,0 40,-17.9 40,-40s-17.9,-40 -40,-40z"/></g></g></svg>
+              <div
+                class="player-controls-btn-hint"
+              >{{isPictureInPicture ? '关闭画中画' : '开启画中画'}}</div>
+            </div>
+            <div class="player-controls-btn cursor-pointer" @click="togglePageFullscreen">
+              <svg
+                v-show="!isPageFullscreen"
+                class="player-controls-icon"
+                t="1596553111831"
+                viewBox="0 0 1024 1024"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                p-id="10800"
+                width="20"
+                height="20"
+              >
+                <path
+                  d="M0 232.732444A232.732444 232.732444 0 0 1 232.732444 0h558.535112A232.732444 232.732444 0 0 1 1024 232.732444v558.535112A232.732444 232.732444 0 0 1 791.267556 1024H232.732444A232.732444 232.732444 0 0 1 0 791.267556V232.732444z m232.732444-139.662222a139.662222 139.662222 0 0 0-139.662222 139.662222v558.535112a139.662222 139.662222 0 0 0 139.662222 139.662222h558.535112a139.662222 139.662222 0 0 0 139.662222-139.662222V232.732444a139.662222 139.662222 0 0 0-139.662222-139.662222H232.732444z"
+                  p-id="10801"
+                  fill="#ffffff"
+                />
+                <path
+                  d="M549.575111 245.845333c0-25.799111 20.935111-46.734222 46.734222-46.734222h116.821334A140.202667 140.202667 0 0 1 853.333333 339.313778v116.821333a46.734222 46.734222 0 0 1-93.468444 0v-116.821333c0-25.827556-20.906667-46.734222-46.734222-46.734222h-116.821334a46.734222 46.734222 0 0 1-46.734222-46.734223zM245.845333 549.546667c25.799111 0 46.734222 20.935111 46.734223 46.734222v116.821333c0 25.827556 20.906667 46.734222 46.734222 46.734222h116.821333a46.734222 46.734222 0 0 1 0 93.468445h-116.821333A140.202667 140.202667 0 0 1 199.111111 713.130667v-116.821334c0-25.799111 20.935111-46.734222 46.734222-46.734222z"
+                  p-id="10802"
+                  fill="#ffffff"
+                />
+              </svg>
+              <svg
+                v-show="isPageFullscreen"
+                t="1596958879235"
+                class="player-controls-icon"
+                viewBox="0 0 1024 1024"
+                version="1.1"
+                xmlns="http://www.w3.org/2000/svg"
+                p-id="2734"
+                width="20"
+                height="20"
+              >
+                <path
+                  d="M0.739556 233.130667a232.391111 232.391111 0 0 1 232.391111-232.391111h557.738666a232.391111 232.391111 0 0 1 232.391111 232.391111v557.738666a232.391111 232.391111 0 0 1-232.391111 232.391111H233.130667a232.391111 232.391111 0 0 1-232.391111-232.391111V233.130667z m232.391111-139.434667a139.434667 139.434667 0 0 0-139.434667 139.434667v557.738666a139.434667 139.434667 0 0 0 139.434667 139.434667h557.738666a139.434667 139.434667 0 0 0 139.434667-139.434667V233.130667a139.434667 139.434667 0 0 0-139.434667-139.434667H233.130667z"
+                  p-id="2735"
+                  fill="#ffffff"
+                />
+                <path
+                  d="M601.088 186.652444c25.685333 0 46.506667 20.792889 46.506667 46.478223v96.796444c0 25.685333 20.792889 46.478222 46.478222 46.478222h96.796444a46.478222 46.478222 0 1 1 0 92.984889h-96.796444a139.434667 139.434667 0 0 1-139.463111-139.463111V233.130667c0-25.685333 20.821333-46.478222 46.478222-46.478223z m-414.435556 414.435556c0-25.656889 20.792889-46.478222 46.478223-46.478222h96.796444a139.434667 139.434667 0 0 1 139.463111 139.463111v96.796444a46.478222 46.478222 0 0 1-92.984889 0v-96.796444c0-25.685333-20.792889-46.478222-46.478222-46.478222H233.130667a46.478222 46.478222 0 0 1-46.478223-46.506667z"
+                  p-id="2736"
+                  fill="#ffffff"
+                />
+              </svg>
+              <div
+                class="player-controls-btn-hint"
+              >{{isPageFullscreen ? '退出网页全屏' : '网页全屏'}}</div>
+            </div>
             <div class="player-controls-btn cursor-pointer" @click="toggleFullScreen">
               <svg t="1655114887825" v-show="!isFullscreen" class="player-controls-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="18260" width="24" height="24"><path id="svg_1" d="m380,97.2l-161.8,0c-66.2,0 -120,53.8 -120,120l0,161.8c0,22.1 17.9,40 40,40s40,-17.9 40,-40l0,-144.4c-0.01199,-30.72452 26.01714,-57.53697 55.7,-57.4l146.1,0c22.1,0 40,-17.9 40,-40s-17.9,-40 -40,-40zm505.8,507.8c-22.1,0 -40,17.9 -40,40c0,48.13333 -0.03176,111.59892 0,144.4c0.03176,32.80108 -23.05908,57.404 -54.96651,57.5l-146.83349,0c-22.1,0 -40,17.9 -40,40s17.9,40 40,40l161.9,0c66.2,0 120,-53.8 120,-120l0,-161.9c-0.1,-22.1 -18,-40 -40.1,-40zm-506.8,240.8l-144.4,0l169.8,-169.8c15.6,-15.6 15.6,-40.9 0,-56.6c-15.6,-15.6 -40.9,-15.6 -56.6,0l-170.6,170.7l0,-146.1c0,-22.1 -17.9,-40 -40,-40s-40,17.9 -40,40l0,161.9c0,66.2 53.8,120 120,120l161.8,0c22.1,0 40,-17.9 40,-40s-17.9,-40.1 -40,-40.1zm427.8,-747.6l-161.8,0c-22.1,0 -40,17.9 -40,40s17.9,40 40,40l144.4,0l-169.8,169.8c-15.6,15.6 -15.6,40.9 0,56.6c7.8,7.8 18,11.7 28.3,11.7c10.2,0 20.5,-3.9 28.3,-11.7l170.7,-170.7l0,146.1c0,22.1 17.9,40 40,40s40,-17.9 40,-40l0,-161.8c-0.1,-66.2 -53.9,-120 -120.1,-120z"/></svg>
               <svg t="1655114887825" v-show="isFullscreen" class="player-controls-icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="18260" width="24" height="24">
@@ -187,8 +243,7 @@
                   </g>
                   </g>
                 </g>
-              </svg>
-              <div
+              </svg><div
                 class="player-controls-btn-hint btn-fullscreen-hint"
               >{{isFullscreen ? '退出全屏' : '进入全屏'}}</div>
             </div>
@@ -249,6 +304,9 @@ export default {
       videoDom: null, //视频dom
       isShowCover: true, // 是否显示封面
       isFullscreen: false, // 是否处于全屏模式
+      isPageFullscreen: false, // 是否处于网页全屏模式
+      isPictureInPicture: false, // 是否处于画中画模式
+      pictureInPictureEnabled: false, // 浏览器是否支持画中画模式
       isCursorStatic: false, // 鼠标是否长时间静止不动
       isMousedownProgress: false, // 鼠标是否按下了进度条（并未松开）
       isPlaying: false, // 是否正在播放
@@ -269,6 +327,7 @@ export default {
   mounted() {
     this.videoDom = this.$refs.video;
     this.videoDom.focus({preventScroll: true});
+    this.pictureInPictureEnabled = document.pictureInPictureEnabled && !this.videoDom.disablePictureInPicture;
     setInterval(() => {
       // 定时更新进度条
       if (this.isPlaying && !this.isMousedownProgress) {
@@ -314,7 +373,7 @@ export default {
     });
     // 监听全屏事件的变化，保存数据
     window.addEventListener("fullscreenchange", () => {
-      this.isFullscreen = this.isFullScreen();
+      this.isFullscreen = this.checkIsFullScreen();
     });
   },
   methods: {
@@ -438,11 +497,23 @@ export default {
       this.videoDom.volume = value;
       this.currentVolume = value;
     },
-    /* 切换“全屏”和“非全屏”模式
+    /**
+     * 切换画中画模式
+     */
+    togglePictureInPicture() {
+      try {
+        let flag = !document.pictureInPictureElement;
+        flag ? this.videoDom.requestPictureInPicture() : document.exitPictureInPicture();
+        this.isPictureInPicture = flag;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    /* 切换全屏模式
      */
     toggleFullScreen() {
       let element = this.$refs.area;
-      if (!this.isFullScreen()) {
+      if (!this.checkIsFullScreen()) {
         if (element.requestFullscreen) {
           element.requestFullscreen();
         } else if(element.webkitRequestFullscreen) {
@@ -469,10 +540,20 @@ export default {
         }
         this.isFullscreen = false;
       }
+      this.isPageFullscreen = false;
+    },
+    /**
+     * 切换网页全屏
+     */
+    togglePageFullscreen() {
+      if (this.checkIsFullScreen()) {
+        this.toggleFullScreen();
+      }
+      this.isPageFullscreen = !this.isPageFullscreen;
     },
     /* 判断是否进入了全屏模式
      */
-    isFullScreen: function () {
+    checkIsFullScreen () {
       return !!(
         document.fullscreen ||
         document.mozFullScreen ||
@@ -534,6 +615,18 @@ export default {
   overflow: hidden;
   pointer-events: none;
 }
+.player-cover > img{
+  object-fit: contain;
+}
+.player-full-flxed {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 1003;
+}
 .player-loading {
   position: absolute;
   top: 50%;
@@ -584,12 +677,13 @@ export default {
   font-size: 1rem;
 }
 .player-controls {
+  padding-top: 12px;
   visibility: visible;
   opacity: 1;
   position: relative;
   display: block;
   transition: visibility 0.3s, opacity 0.3s;
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.6));
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.6));
 }
 .player-controls-container:hover .player-controls {
   visibility: visible;

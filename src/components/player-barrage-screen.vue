@@ -2,6 +2,7 @@
   <div
     ref="wrap"
     class="player-barrage-wrap"
+    v-if="enable"
     :style="`--animationPlayState: ${animationPlayState}`"
   >
     <div
@@ -18,6 +19,11 @@
   export default {
     name: "player-barrage-screen",
     props: {
+      // 是否开启弹幕
+      enable: {
+        type: Boolean,
+        default: true,
+      },
       // 是否正在播放
       isPlaying: {
         type: Boolean,
@@ -66,6 +72,7 @@
           if (info.start_time < this.videoDom.currentTime) {
             // 标记下一条弹幕的索引
             this.barragedTag++;
+            if (!this.enable) return;
             switch (info.mode) {
               case 0:case 1:case 2:case 3:
                 this.createBarrage(this.barrageList[this.barragedTag]);

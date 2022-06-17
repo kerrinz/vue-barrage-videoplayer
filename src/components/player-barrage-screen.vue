@@ -48,7 +48,7 @@
     },
     data() {
       return {
-        barragedTag: 0, // 标记上一条弹幕的索引
+        barragedTag: 0, // 标记下一条等待显示的弹幕的索引
         barrageList: [], // 弹幕列表
         channelAmount: 10, // 弹幕通道数量
         animationPlayState: "uset",
@@ -69,19 +69,19 @@
       setInterval(() => {
         if (this.isPlaying) {
           let info = this.barrageList[this.barragedTag];
-          if (info.start_time < this.videoDom.currentTime) {
+          if (info && info.start_time < this.videoDom.currentTime) {
             // 标记下一条弹幕的索引
             this.barragedTag++;
             if (!this.enable) return;
             switch (info.mode) {
               case 0:case 1:case 2:case 3:
-                this.createBarrage(this.barrageList[this.barragedTag]);
+                this.createBarrage(info);
                 break;
               case 4: // 底部弹幕
-                this.createBottomFixedBarrage(this.barrageList[this.barragedTag]);
+                this.createBottomFixedBarrage(info);
                 break;
               case 5: // 顶部弹幕
-                this.createTopFixedBarrage(this.barrageList[this.barragedTag]);
+                this.createTopFixedBarrage(info);
                 break;
             }
           }

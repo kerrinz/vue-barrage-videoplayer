@@ -43,9 +43,9 @@ export default {
   },
   data() {
     return {
-      videoSrc: "https://yleen.cc/files/videos/output.mp4", // 视频链接
-      cover: "https://yleen.cc/files/images/liuhua1.png", // 可选，封面图的链接
-      biBarrageXml: "/files/danmu_bili/danmaku.xml", // 可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
+      videoSrc: "https://yleen.cc/files/videos/摇曳露营01.mp4", // 视频链接
+      cover: "https://yleen.cc/files/images/摇曳露营cover1.jpg", // 可选，封面图的链接
+      biBarrageXml: "/files/danmu_bili/摇曳露营01_acfun.xml", // 可选，B站弹幕xml格式文件的链接（需要处理跨域问题）
       inputSrc: null,
     };
   },

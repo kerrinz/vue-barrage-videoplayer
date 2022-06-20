@@ -104,6 +104,7 @@
                 <div class="volume-control-wrap">
                   <div class="volume-text">{{ volumePercent }}</div>
                   <volumeBar
+                    class="volume-bar"
                     :currentVolume="currentVolume"
                     v-on:updateVolume="updateVolumeByClickBar"
                     width="4px"
@@ -816,6 +817,9 @@ export default {
   padding: 24px 10px;
   transition: visibility 0.3s;
   transform: translate(-50%, -100%);
+}
+.volume-control .volume-bar {
+  flex: 1;
 }
 .volume-control-wrap {
   display: flex;

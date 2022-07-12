@@ -26,8 +26,8 @@
 ### Plan
 - [X] Multiplayer coexistence
 - [X] Barrage display
+- [X] Full screen with only web page
 - [ ] Barrage settings
-- [ ] Full screen with only web page
 - [ ] Right click to view video data
 - [ ] Multilingual support
 - [ ] live push stream video

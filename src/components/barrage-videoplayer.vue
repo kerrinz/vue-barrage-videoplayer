@@ -54,9 +54,10 @@
       <div :class="{'player-controls': true, 'cursor-lasting-static': isCursorStatic}">
         <div class="player-progress-bar">
           <progressBar
+            :videoDom="videoDom"
             :currentProgress="currentProgress"
-            v-on:updateProgress="updateProgressByClickBar"
-            v-on:getMouseDownStatus="getMouseDownStatusOfProgressBar"
+            v-on:dragging="onDraggingProgress"
+            v-on:released="onReleasedProgress"
             width="100%"
             height="3px"
           ></progressBar>
@@ -269,7 +270,7 @@ export default {
       isPictureInPicture: false, // 是否处于画中画模式
       pictureInPictureEnabled: false, // 浏览器是否支持画中画模式
       isCursorStatic: false, // 鼠标是否长时间静止不动
-      isMousedownProgress: false, // 鼠标是否按下了进度条（并未松开）
+      isDraggingProgressBar: false, // 是否处于拖动进度条的过程中
       isPlaying: false, // 是否正在播放
       isShowLoading: false, // 是否显示加载框
       isShowVolumeHint: false, // 是否显示音量提示条（键盘触发）
@@ -292,7 +293,7 @@ export default {
     this.pictureInPictureEnabled = document.pictureInPictureEnabled && !this.videoDom.disablePictureInPicture;
     let interval = function() {
       // 定时更新进度条
-      if (this.isPlaying && !this.isMousedownProgress) {
+      if (this.isPlaying && !this.isDraggingProgressBar) {
         this.currentProgress =
           this.videoDom.currentTime / this.videoDom.duration;
       }
@@ -418,7 +419,8 @@ export default {
       let newCurrentTime = this.videoDom.currentTime + 5;
       this.videoDom.currentTime = newCurrentTime;
       this.barrageTimelineStart = newCurrentTime;
-      this.updateProgressBySetTime(newCurrentTime);
+      this.updateProgressBarByTime(newCurrentTime);
+      this.updateProgressText();
     },
     /* 后退视频播放进度
      */
@@ -426,25 +428,28 @@ export default {
       let newCurrentTime = this.videoDom.currentTime - 5;
       this.videoDom.currentTime = newCurrentTime;
       this.barrageTimelineStart = newCurrentTime;
-      this.updateProgressBySetTime(newCurrentTime);
+      this.updateProgressBarByTime(newCurrentTime);
+      this.updateProgressText();
     },
-    /* 获取鼠标是否按下了进度条
+    /* 拖动进度条
      */
-    getMouseDownStatusOfProgressBar(value) {
-      this.isMousedownProgress = value;
-    },
-    /* 点击进度条更新视频播放进度
-     */
-    updateProgressByClickBar(value) {
-      let duration = this.videoDom.duration;
+    onDraggingProgress(value) {
       this.currentProgress = value;
-      let new_current_time = Math.round(value * duration);
-      this.barrageTimelineStart = new_current_time;
-      this.videoDom.currentTime = new_current_time;
+      this.isDraggingProgressBar = true;
     },
-    /* 通过新的播放时间更新视频播放进度
+    /* 松开/释放拖动的进度条
      */
-    updateProgressBySetTime(newCurrentTime) {
+    onReleasedProgress(value) {
+      this.currentProgress = value;
+      let newCurrentTime = Math.floor(value * this.videoDom.duration);
+      this.barrageTimelineStart = newCurrentTime;
+      this.videoDom.currentTime = newCurrentTime;
+      this.isDraggingProgressBar = false;
+      this.updateProgressText();
+    },
+    /* 更新视频播放进度
+     */
+    updateProgressBarByTime(newCurrentTime) {
       this.currentProgress = newCurrentTime / this.videoDom.duration;
     },
     /* 提高视频音量
@@ -638,6 +643,7 @@ export default {
   left: 0;
   right: 0;
   overflow: hidden;
+  background: #000;
   pointer-events: none;
 }
 .player-cover > img{

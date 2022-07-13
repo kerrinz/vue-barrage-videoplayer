@@ -1,25 +1,25 @@
 # vue弹幕视频播放器
-简体中文 / [English](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/README_EN.md)
+[![GitHub stars](https://img.shields.io/github/stars/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/stargazers) [![GitHub forks](https://img.shields.io/github/forks/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/network) [![GitHub release](https://img.shields.io/github/v/release/yleencc/vue-barrage-videoplayer?include_prereleases)](https://github.com/yleencc/vue-barrage-videoplayer/releases) [![GitHub license](https://img.shields.io/github/license/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/LICENSE)
+
+Language: 简体中文 / [English](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/README_EN.md)
  
 ## 简介
-> 一个基于Vue的弹幕视频播放器组件。适用于：`PC版网页`、`静态资源视频`
+一个基于Vue的弹幕视频播放器组件。适用于PC版网页，且视频为静态资源视频。
+注：该组件为UI封装，并不涉及底层编解码。
+
+## 预览
+- [点击跳转预览](https://yleen.cc/files/works/barrage-video-player/)
 
 ## 功能支持
-> 主要功能：播放、音量控制、倍速、进度条控制、全屏、网页全屏、画中画、弹幕（部分）
->
-> 键盘控制：F全屏，↑↓键调整音量，←→调整进度，Space暂停/继续
->
-> 视频格式：仅支持原生Video所支持的视频格式，如果需要额外支持flv、mpegts, m2ts等格式，需要引入第三方库，例如[mpegts.js](https://github.com/xqq/mpegts.js)；另外，可以通过ref的形式获取播放器的视频dom，例如配置`ref="player"`，通过`this.$refs.player[0].videoDom`得到视频dom，便于使用第三方库拓展。
+- 主要功能：音量和进度条、倍速、全屏、网页全屏、画中画、弹幕（部分）
+- 键盘控制：（F）全屏，（↑↓）调整音量，（←→）调整进度，（空格）暂停/继续
+- 视频格式：仅支持原生H5 Video所支持的视频格式，如果需要额外支持flv、mpegts, m2ts等格式，需要引用其他第三方库，例如[mpegts.js](https://github.com/xqq/mpegts.js)；
+- 获取视频dom的方式：配置ref后调用videoDom。例如`ref="player"`，通过`this.$refs.player[0].videoDom`得到视频dom。
 
 ### 弹幕支持情况
-> 格式：只支持B站xml弹幕格式，详细格式情况參考[这篇文章](https://blog.csdn.net/Enderman_xiaohei/article/details/86659064)
->
-> 显示：支持滚动弹幕、顶部悬停弹幕、底部悬停弹幕
->
-> 设置项：暂未支持
-
-## 预览示例
-- [点击跳转预览](https://yleen.cc/files/works/barrage-video-player/)
+- 格式：暂时只支持旧版B站xml弹幕格式，详细格式情况參考[这篇文章](https://blog.csdn.net/Enderman_xiaohei/article/details/86659064)
+- 显示：支持滚动、顶部悬停、底部悬停三种弹幕
+- 设置项：计划开发中...
 
 ---
 
@@ -28,30 +28,24 @@
 - [X] 弹幕显示
 - [X] 网页全屏
 - [ ] 弹幕设置
-- [ ] 发送弹幕
+- [ ] 封装成易于导入的库
 - [ ] 右键查看视频数据
 - [ ] 多语言支持
 - [ ] 直播推流
-- [ ] ~~适配好移动端~~
-
-## 更新历史
-- 0.1.1 增加了对同时使用多个播放器的支持，以及封面图
-- 0.1.2 优化了遗留的部分烂代码
-- 0.2   支持显示滑动弹幕，预留导入外部弹幕文件功能
-- 0.3   优化滑动弹幕，支持顶部和底部的悬停弹幕，缩小默认字体大小
-- 0.3.1 支持画中画、网页全屏、开关弹幕；优化事件监听器回收；修改部分图标和样式
+- [ ] ~~适配移动端~~
 
 ## 使用方式与示例
-可参考简单示例[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-simple.vue) 文件
+注意：前往[releases](https://github.com/yleencc/vue-barrage-videoplayer/releases)下载最新版本，且项目需要引入`axios`
+示例代码文件：[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-simple.vue) 
+引入方式：
 1. 将`src/components`下的四个文件复制到你的项目里，确保这四个文件保持在同一目录；
 2. 将`src/assets`文件夹复制到项目`src/`里面，确保`/src/assets/images/loading.svg`存在（该文件为缓冲时的加载图标）
-3. 在页面中引用`barrage-videoplayer.vue`
-   - 注：项目需要引入`axios`
-4. 简单示例：
+3. 在页面中导入`barrage-videoplayer.vue`
+4. 极简代码示例：
 ``` vue
 <template>
     <barrageVideoplayer
-        :src="video_src"
+        :src="videoSrc"
         width="100%"
         height="100%"
     ></barrageVideoplayer>
@@ -62,7 +56,7 @@ export default {
   components: {barrageVideoplayer},
   data() {
     return {
-      video_src: "",
+      videoSrc: "这里是视频地址~",
     };
   },
 }
@@ -74,14 +68,13 @@ export default {
 | 字段 | 是否可选 | 类型 | 默认值 | 备注 |
 |---|---|---|---|---|
 | src | `必选` | String | null | 视频链接 |
-| cover | `可选` | String | null | 封面图的链接 |
+| cover | `可选` | String | null | 自定义封面图的链接，为null则显示视频的默认封面 |
 | primaryColor | `可选` | String | "cornflowerblue" | 主题色，可使用css属性值：颜色名称、#十六进制、rgb、rgba、HSL、HSLA |
 | width | `可选` | String | 100% | 视频宽度，对应css样式 |
 | height | `可选` | String | 100% | 视频高度，对应css样式 |
-| speed_list | `可选` | array | ["2.0", "1.5", "1.25", "1.0", "0.75", "0.5"]  | 倍速选择的列表 |
-| biBarrageXml | `可选` | String | null | 弹幕链接，使用的是B站XML风格，需处理跨域问题 |
+| speed_list | `可选` | array | ["2.0", "1.5", "1.25", "1.0", "0.75", "0.5"]  | 倍速选择的列表，初始1.0倍速 |
+| biBarrageXml | `可选` | String | null | 弹幕链接，使用的是旧版B站XML风格，为null则不显示弹幕；需处理跨域问题 |
 
-（如果不需要封面则不配置cover，不需要弹幕功能则不配置biBarrageXml）
 
 ### bug反馈
 - 提[issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)

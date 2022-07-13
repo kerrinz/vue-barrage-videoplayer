@@ -32,7 +32,8 @@
           >
             @vue-barrage-videoplayer
           </a>
-          <p>Author: 月琳cc</p>
+          <p>作者: 月琳cc</p>
+          <p>版本: {{ version }}</p>
         </h5>
         <hr color="#abc" size="1" />
       </div>
@@ -54,6 +55,7 @@
 </template>
 
 <script>
+import config from '../../package.json';
 export default {
   data() {
     return {
@@ -68,6 +70,7 @@ export default {
         },
       ],
       selectedNavPath: null, // 当前选中高亮的路径
+      version: config.version,
     };
   },
   created() {

@@ -55,6 +55,33 @@
         scrollOccupy: [], // 滚动弹幕的占用情况，0为空闲，>0的数为剩余的时间（毫秒），该时间经过后通道变为空闲（0）
         topOccupy: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 顶部占用，暂时10行（下标从最顶部部开始，0表示空闲，1表示占用）
         bottomOccupy: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0], // 底部占用（下标从最底部开始）
+        /* timer: {
+          timeOutIds: [],
+          addSetTimeOut(fun, ms) {
+            const id = setTimeout(() => {fun(); this.stop(id)}, ms);
+            this.timeOutIds.push(id);
+            return id;
+          },
+          pauseAll() {
+            for (let i = 0; i < this.timeOutIds.length; i++) {
+              clearTimeout(this.timeOutIds[i]);
+            }
+          },
+          startAll() {
+
+          },
+          start() {
+
+          },
+          stop(id) {
+              clearTimeout(this.timeOutIds[id]);
+          },
+          clearAll() {
+            for (const i = 0; i < this.timeOutIds.length; i++) {
+              clearTimeout(this.timeOutIds[i]);
+            }
+          }
+        }, // 延时和计时的管理器 */
       };
     },
     beforeMount() {
@@ -68,8 +95,8 @@
       // 测试弹幕
       setInterval(() => {
         if (this.isPlaying) {
-          let info = this.barrageList[this.barragedTag];
-          if (info && info.start_time < this.videoDom.currentTime) {
+          const info = this.barrageList[this.barragedTag];
+          if (info && info.startTime < this.videoDom.currentTime) {
             // 标记下一条弹幕的索引
             this.barragedTag++;
             if (!this.enable) return;
@@ -107,33 +134,33 @@
           url: this.biBarrageXml,
           data: {},
         }).then((res) => {
-          let xmlDoc = new DOMParser().parseFromString(res.data, "text/xml");
-          let elements = xmlDoc.getElementsByTagName("d");
+          const xmlDoc = new DOMParser().parseFromString(res.data, "text/xml");
+          const elements = xmlDoc.getElementsByTagName("d");
           let array = [];
           for (let n = 0, len = elements.length; n < len; n++) {
-            let p_attr_list = elements[n].getAttribute("p").split(",");
+            const pAttributeList = elements[n].getAttribute("p").split(",");
             // 弹幕的信息
-            let color = Number(p_attr_list[3]).toString(16);
-            let info = {
+            const color = Number(pAttributeList[3]).toString(16);
+            const info = {
               content: elements[n].innerHTML,
-              start_time: Number(p_attr_list[0]),
-              mode: Number(p_attr_list[1]),
-              font_size: p_attr_list[2],
-              font_color: color,
-              timestamp: p_attr_list[4],
-              barrage_pool: p_attr_list[5],
-              user_hash: p_attr_list[6],
-              row_id: p_attr_list[7],
+              startTime: Number(pAttributeList[0]),
+              mode: Number(pAttributeList[1]),
+              fontSize: pAttributeList[2],
+              fontColor: color,
+              timestamp: pAttributeList[4],
+              barragePool: pAttributeList[5],
+              userHash: pAttributeList[6],
+              rowId: pAttributeList[7],
             };
             array.push(info);
           }
           // 写个冒泡过渡一下。。
           for (let i = 0, len = array.length; i < len; i++) {
-            for (let j = 0, len_cache = len - i - 1; j < len_cache; j++) {
-              if (array[j].start_time > array[j + 1].start_time) {
-                let array_cache = array[j];
+            for (let j = 0, lenCache = len - i - 1; j < lenCache; j++) {
+              if (array[j].startTime > array[j + 1].startTime) {
+                const arrayCache = array[j];
                 array[j] = array[j + 1];
-                array[j + 1] = array_cache;
+                array[j + 1] = arrayCache;
               }
             }
           }
@@ -156,8 +183,8 @@
         let dom = document.createElement("span");
         dom.innerText = info.content;
         dom.setAttribute("class", "barrage barrage-scroll");
-        dom.style.fontSize = `${info.font_size*0.8}px`;
-        dom.style.color = `#${info.font_color}`;
+        dom.style.fontSize = `${info.fontSize*0.8}px`;
+        dom.style.color = `#${info.fontColor}`;
         //动画过渡完之后清除掉弹幕dom
         dom.addEventListener("animationend", () => {
           dom.removeEventListener("animationend", this, false);
@@ -183,9 +210,9 @@
         let dom = document.createElement("span");
         dom.innerText = info.content;
         dom.setAttribute("class", "barrage barrage-center barrage-bottom");
-        dom.style.fontSize = `${info.font_size*0.8}px`;
-        dom.style.bottom = `${(Number(info.font_size)*0.8 + 4) * index}px`;
-        dom.style.color = `#${info.font_color}`;
+        dom.style.fontSize = `${info.fontSize*0.8}px`;
+        dom.style.bottom = `${(Number(info.fontSize)*0.8 + 4) * index}px`;
+        dom.style.color = `#${info.fontColor}`;
         // 之后清除掉弹幕dom
         setTimeout(() =>{
           dom.style.opacity = 0;
@@ -211,9 +238,9 @@
         let dom = document.createElement("span");
         dom.innerText = info.content;
         dom.setAttribute("class", "barrage barrage-center barrage-top");
-        dom.style.fontSize = `${info.font_size}px`;
-        dom.style.top = `${(Number(info.font_size)*0.8 + 4) * index}px`;
-        dom.style.color = `#${info.font_color}`;
+        dom.style.fontSize = `${info.fontSize}px`;
+        dom.style.top = `${(Number(info.fontSize)*0.8 + 4) * index}px`;
+        dom.style.color = `#${info.fontColor}`;
         // 之后清除掉弹幕dom
         setTimeout(() =>{
           dom.style.opacity = 0;
@@ -239,10 +266,10 @@
        * 在手动改变进度条的时候触发，遍历弹幕列表获取下一条弹幕的索引
        */
       barrageTimelineStart: function () {
-        let list = this.barrageList;
-        let barrage_start = this.barrageTimelineStart;
+        const list = this.barrageList;
+        const barrageStart = this.barrageTimelineStart;
         for (let n = 0; n < list.length; n++) {
-          if (list[n].start_time >= barrage_start) {
+          if (list[n].startTime >= barrageStart) {
             this.barragedTag = n;
             break;
           }

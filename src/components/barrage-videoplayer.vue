@@ -31,13 +31,13 @@
       <img :src="cover" :width="width" :height="height" alt=""/>
     </div>
     <!-- 弹幕 -->
-    <playerBarrageScreen
+    <PlayerBarrageScreen
             v-if="biBarrageXml != null"
             :enable="isShowBarrage"
-            :videoDom="videoDom"
-            :barrageTimelineStart="barrageTimelineStart"
-            :isPlaying="isPlaying"
-            :biBarrageXml="biBarrageXml"
+            :video-dom="videoDom"
+            :barrage-timeline-start="barrageTimelineStart"
+            :is-playing="isPlaying"
+            :bi-barrage-xml="biBarrageXml"
     />
     <!-- 加载动画 -->
     <div v-show="isShowLoading" class="player-loading" @click="videoDom.focus({preventScroll: true})">
@@ -53,14 +53,15 @@
       </div>
       <div :class="{'player-controls': true, 'cursor-lasting-static': isCursorStatic}">
         <div class="player-progress-bar">
-          <progressBar
-            :videoDom="videoDom"
-            :currentProgress="currentProgress"
-            v-on:dragging="onDraggingProgress"
-            v-on:released="onReleasedProgress"
+          <ProgressBar
+            :duration="duration"
+            :current-time="currentTime"
+            :buffered="buffered"
+            @dragging="onDraggingProgress"
+            @released="onReleasedProgress"
             width="100%"
             height="3px"
-          ></progressBar>
+          ></ProgressBar>
         </div>
         <div class="player-controls-bottom">
           <div class="player-controls-bottom-left">
@@ -70,7 +71,7 @@
               <svg v-show="isPlaying" t="1655361096742" class="icon" viewBox="100 50 924 924" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="22925" width="24" height="24"><path d="M685.237 808.447h-27.988c-33.594 0-56.016-27.988-56.016-55.996V310.049c0-33.594 28.008-55.996 56.016-55.996h27.988c33.594 0 56.016 28.008 56.016 55.996v436.816c5.585 33.594-22.423 61.582-56.016 61.582zM366.037 808.447h-27.988c-33.594 0-56.016-27.988-56.016-55.996V310.049c0-33.594 28.008-55.996 56.016-55.996h27.988c33.594 0 56.016 28.008 56.016 55.996v436.816c0 33.594-22.422 61.582-56.016 61.582z" p-id="22926" fill="#ffffff"></path></svg>
             </div>
             <div class="time-label">
-              {{ currentTimeFormat }} / <span class="fulltime">{{ fullTimeFormat }}</span>
+              {{ currentTimeLabel }} / <span class="fulltime">{{ fullTimeLabel }}</span>
               </div>
           </div>
           <div class="player-controls-bottom-right">
@@ -106,12 +107,12 @@
               <div class="volume-control">
                 <div class="volume-control-wrap">
                   <div class="volume-text">{{ volumePercent }}</div>
-                  <volumeBar
+                  <VolumeBar
                     class="volume-bar"
-                    :currentVolume="currentVolume"
-                    v-on:updateVolume="updateVolumeByClickBar"
+                    :current-volume="currentVolume"
+                    @updateVolume="updateVolumeByClickBar"
                     width="4px"
-                  ></volumeBar>
+                  ></VolumeBar>
                 </div>
               </div>
             </div>
@@ -209,13 +210,13 @@
 </template>
 
 <script>
-import volumeBar from "./volume-bar.vue";
-import progressBar from "./progress-bar.vue";
-import playerBarrageScreen from "./player-barrage-screen.vue";
+import VolumeBar from "./volume-bar.vue";
+import ProgressBar from "./progress-bar.vue";
+import PlayerBarrageScreen from "./player-barrage-screen.vue";
 
 export default {
   name: "barrage-videoplayer",
-  components: { volumeBar, progressBar, playerBarrageScreen },
+  components: { VolumeBar, ProgressBar, PlayerBarrageScreen },
   props: {
     width: {
       type: String,
@@ -258,11 +259,13 @@ export default {
     volumePercent() {
       if (this.currentVolume < 0.005) return Math.ceil(this.currentVolume * 100);
       else return Math.round(this.currentVolume * 100);
-    }
+    },
   },
   data() {
     return {
       videoDom: null, //视频dom
+      duration: 0, // 视频全长
+      buffered: null, // 缓冲(TimeRanges)
       isShowCover: true, // 是否显示封面
       isShowBarrage: true, // 是否显示弹幕
       isFullscreen: false, // 是否处于全屏模式
@@ -274,13 +277,13 @@ export default {
       isPlaying: false, // 是否正在播放
       isShowLoading: false, // 是否显示加载框
       isShowVolumeHint: false, // 是否显示音量提示条（键盘触发）
-      timeoutVolumeHint: 0, // 音量提示条多久ms后隐藏
-      timeoutControlsHint: 0, // 控制面板多久ms后隐藏
+      volumeHintTimeout: 0, // 音量提示条多久ms后隐藏
+      controlsHintTimeout: 0, // 控制面板多久ms后隐藏
       currentSpeed: 1.0, // 当前倍速
       currentVolume: 1, // 当前音量（0-1），同时作用于当前音量条的长度；currentVolumeCache为该值的缓存
-      currentProgress: 0, // 当前播放进度（0-1）。同时作用于当前进度条的长度
-      currentTimeFormat: "00:00", // 当前播放进度的文字
-      fullTimeFormat: "00:00", // 视频总长度的文字
+      currentTime: 0, // 当前播放进度，仅作用于进度条UI，变更该项并不会作用于video.currentTime
+      currentTimeLabel: "00:00", // 当前播放进度的文字
+      fullTimeLabel: "00:00", // 视频总长度的文字
       barrageTimelineStart: 0, // 弹幕时间轴的起始时间点（手动调整进度条触发更新）
       listeners: [], // 事件监听列表，列表项格式：{eventName: String, element: ELement, method: Function}
       intervals: [], // 定时器列表，列表项格式：Function
@@ -294,37 +297,36 @@ export default {
     let interval = function() {
       // 定时更新进度条
       if (this.isPlaying && !this.isDraggingProgressBar) {
-        this.currentProgress =
-          this.videoDom.currentTime / this.videoDom.duration;
+        this.currentTime = this.videoDom.currentTime;
       }
       // 定时更新进度的文字显示
       this.updateProgressText();
       // 音量提示面板的定时隐藏
-      if (this.timeoutVolumeHint == null) {
+      if (this.volumeHintTimeout == null) {
         // 当定时为null，直接跳过
-      } else if (this.timeoutVolumeHint === 0) {
+      } else if (this.volumeHintTimeout === 0) {
         this.isShowVolumeHint = false;
         this.isCursorStatic = false;
-        this.timeoutVolumeHint = null;
-      } else if (this.timeoutVolumeHint > 0) {
-        this.timeoutVolumeHint -= 1000;
+        this.volumeHintTimeout = null;
+      } else if (this.volumeHintTimeout > 0) {
+        this.volumeHintTimeout -= 1000;
       } else {
-        this.timeoutVolumeHint = 0;
+        this.volumeHintTimeout = 0;
       }
       // 总控制面板的定时隐藏
       if (
-        this.timeoutControlsHint == null ||
-        this.currentProgress === 0 ||
-        this.currentProgress === 1
+        this.controlsHintTimeout == null ||
+        this.currentTime === 0 ||
+        this.currentTime === this.duration
       ) {
         // 当定时为null、视频还未播放或播放完毕的时候，直接跳过
-      } else if (this.timeoutControlsHint === 0) {
+      } else if (this.controlsHintTimeout === 0) {
         this.isCursorStatic = true;
-        this.timeoutControlsHint = null;
-      } else if (this.timeoutControlsHint > 0) {
-        this.timeoutControlsHint -= 1000;
+        this.controlsHintTimeout = null;
+      } else if (this.controlsHintTimeout > 0) {
+        this.controlsHintTimeout -= 1000;
       } else {
-        this.timeoutControlsHint = 0;
+        this.controlsHintTimeout = 0;
       }
       // 根据视频的readyState判断下一帧是否已加载，并控制loading的显示
       this.isShowLoading = this.videoDom.readyState < 3;
@@ -336,7 +338,7 @@ export default {
       element: this.videoDom,
       method: function() {
         this.isCursorStatic = false;
-        this.timeoutControlsHint = 2000;
+        this.controlsHintTimeout = 2000;
       }.bind(this),
     } // 视频dom监听器，用于控制鼠标的显示
     let fullscreenchange = {
@@ -353,21 +355,40 @@ export default {
         this.isPictureInPicture = false;
       }.bind(this),
     } // 画中画监听
+    let onprogress = {
+      eventName: "progress",
+      element: this.videoDom,
+      method: function(e) {
+        console.log(e)
+        this.buffered = this.videoDom.buffered;
+      }.bind(this),
+    } // 视频加载下载过程中触发
+    let onDurationchange = {
+      eventName: "durationchange",
+      element: this.videoDom,
+      method: function(e) {
+        this.duration = e.target.duration;
+      }.bind(this),
+    } // 视频音频时长发生变化时触发
     this.listeners.push(mouseMove);
     this.listeners.push(fullscreenchange);
     this.listeners.push(pic);
+    this.listeners.push(onprogress);
+    this.listeners.push(onDurationchange);
     this.videoDom.addEventListener("mousemove", mouseMove.method, false);
     window.addEventListener("fullscreenchange", fullscreenchange.method, false);
     this.videoDom.addEventListener("leavepictureinpicture", pic.method, false);
+    this.videoDom.addEventListener("progress", onprogress.method, false);
+    this.videoDom.addEventListener("durationchange", onDurationchange.method, false);
   },
   beforeDestroy() {
     // 销毁事件监听器
-    for (let index in this.listeners) {
-      let item = this.listeners[index];
+    for (const index in this.listeners) {
+      const item = this.listeners[index];
       item.element.removeEventListener(item.eventName, item.method);
     }
     // 销毁定时器
-    for (let index in this.intervals) {
+    for (const index in this.intervals) {
       clearInterval(this.intervals[index])
     }
   },
@@ -387,24 +408,22 @@ export default {
     /* 更新视频进度的文字显示
      */
     updateProgressText() {
-      this.currentTimeFormat = this.secondTimeFormat(
-        this.videoDom.currentTime
-      );
-      this.fullTimeFormat = this.secondTimeFormat(this.videoDom.duration);
+      this.currentTimeLabel = this.secondTimeFormat(this.videoDom.currentTime);
+      this.fullTimeLabel = this.secondTimeFormat(this.videoDom.duration);
     },
     /* 时间格式化，秒格式化成xx:xx:xx
      */
     secondTimeFormat(second) {
-      let result = parseInt(second);
-      let h =
+      const result = parseInt(second);
+      const h =
         Math.floor(result / 3600) < 10
           ? "0" + Math.floor(result / 3600)
           : Math.floor(result / 3600);
-      let m =
+      const m =
         Math.floor((result / 60) % 60) < 10
           ? "0" + Math.floor((result / 60) % 60)
           : Math.floor((result / 60) % 60);
-      let s =
+      const s =
         Math.floor(result % 60) < 10
           ? "0" + Math.floor(result % 60)
           : Math.floor(result % 60);
@@ -413,56 +432,46 @@ export default {
       else
         return `${h}:${m}:${s}`;
     },
+    // 更新视频的当前播放时间，同时更新其他依赖
+    updateVideoCurrentTime(newCurrentTime) {
+      this.videoDom.currentTime = newCurrentTime;
+      this.barrageTimelineStart = newCurrentTime;
+      this.currentTime = newCurrentTime;
+      this.updateProgressText();
+    },
     /* 前进视频播放进度
      */
     forwardCurrentTime() {
-      let newCurrentTime = this.videoDom.currentTime + 5;
-      this.videoDom.currentTime = newCurrentTime;
-      this.barrageTimelineStart = newCurrentTime;
-      this.updateProgressBarByTime(newCurrentTime);
-      this.updateProgressText();
+      this.updateVideoCurrentTime(this.videoDom.currentTime + 5);
     },
     /* 后退视频播放进度
      */
     backwardCurrentTime() {
-      let newCurrentTime = this.videoDom.currentTime - 5;
-      this.videoDom.currentTime = newCurrentTime;
-      this.barrageTimelineStart = newCurrentTime;
-      this.updateProgressBarByTime(newCurrentTime);
-      this.updateProgressText();
+      this.updateVideoCurrentTime(this.videoDom.currentTime - 5);
     },
     /* 拖动进度条
      */
     onDraggingProgress(value) {
-      this.currentProgress = value;
+      this.currentTime = value;
       this.isDraggingProgressBar = true;
     },
     /* 松开/释放拖动的进度条
      */
     onReleasedProgress(value) {
-      this.currentProgress = value;
-      let newCurrentTime = Math.floor(value * this.videoDom.duration);
-      this.barrageTimelineStart = newCurrentTime;
-      this.videoDom.currentTime = newCurrentTime;
+      this.updateVideoCurrentTime(value);
       this.isDraggingProgressBar = false;
-      this.updateProgressText();
-    },
-    /* 更新视频播放进度
-     */
-    updateProgressBarByTime(newCurrentTime) {
-      this.currentProgress = newCurrentTime / this.videoDom.duration;
     },
     /* 提高视频音量
      */
     increaseVolume() {
       this.isShowVolumeHint = true;
-      this.timeoutVolumeHint = 2000;
-      let nowVolume = this.videoDom.volume;
+      this.volumeHintTimeout = 2000;
+      const nowVolume = this.videoDom.volume;
       if (nowVolume >= 0.9) {
         this.videoDom.volume = 1;
         this.currentVolume = 1;
       } else {
-        let newVolume = this.videoDom.volume + 0.1;
+        const newVolume = this.videoDom.volume + 0.1;
         this.videoDom.volume = newVolume;
         this.currentVolume = newVolume;
       }
@@ -471,13 +480,13 @@ export default {
      */
     lowerVolume() {
       this.isShowVolumeHint = true;
-      this.timeoutVolumeHint = 2000;
-      let nowVolume = this.videoDom.volume;
+      this.volumeHintTimeout = 2000;
+      const nowVolume = this.videoDom.volume;
       if (nowVolume <= 0.1) {
         this.videoDom.volume = 0;
         this.currentVolume = 0;
       } else {
-        let newVolume = this.videoDom.volume - 0.1;
+        const newVolume = this.videoDom.volume - 0.1;
         this.videoDom.volume = newVolume;
         this.currentVolume = newVolume;
       }
@@ -486,7 +495,7 @@ export default {
      */
     changeSpeed(e) {
       // 获取选择的倍速
-      let value = e.currentTarget.dataset.value;
+      const value = e.currentTarget.dataset.value;
       // 应用视频倍速
       this.videoDom.playbackRate = value;
       // 标记变更后的倍速，用于显示文字
@@ -527,7 +536,7 @@ export default {
      */
     togglePictureInPicture() {
       try {
-        let flag = !document.pictureInPictureElement;
+        const flag = !document.pictureInPictureElement;
         flag ? this.videoDom.requestPictureInPicture() : document.exitPictureInPicture();
         this.isPictureInPicture = flag;
       } catch (error) {
@@ -537,7 +546,7 @@ export default {
     /* 切换全屏模式
      */
     toggleFullScreen() {
-      let element = this.$refs.area;
+      const element = this.$refs.area;
       if (!this.checkIsFullScreen()) {
         if (element.requestFullscreen) {
           element.requestFullscreen();
@@ -589,9 +598,9 @@ export default {
     },
   },
   watch: {
-    currentProgress: function () {
+    currentTime: function () {
       // 进度条到终点时修改播放状态
-      if (this.currentProgress === 1) {
+      if (this.currentTime === this.duration) {
         this.isPlaying = false;
       }
     },

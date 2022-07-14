@@ -41,22 +41,22 @@ export default {
   },
   data() {
     return {
-      is_click_bar: false, // 是否点击了音量条
-      full_height: null, //音量条的总高度（像素）
-      dom_volume_full: null, //总音量条的dom
-      full_bar_client_top: 0, //满载的音量条相对于视口的高度
+      isClickBar: false, // 是否点击了音量条
+      fullBarHeight: null, // 音量条的总高度（像素）
+      fullBarDom: null, // 总音量条的dom
+      fullBarClientTop: 0, // 满载的音量条相对于视口的高度
       listeners: [], // 事件监听列表，列表项格式：{eventName: String, element: ELement, method: Function}
       intervals: [], // 定时器列表，列表项格式：Function
     };
   },
   mounted() {
-    this.dom_volume_full = this.$refs["volume-full"];
+    this.fullBarDom = this.$refs["volume-full"];
     //绑定全局监听器
     let move = {
       eventName: "mousemove",
       element: window,
       method: function(e) {
-        if (this.is_click_bar) {
+        if (this.isClickBar) {
           this.move(e);
         }
       }.bind(this),
@@ -75,45 +75,43 @@ export default {
   },
   beforeDestroy() {
     // 销毁事件监听器
-    for (let index in this.listeners) {
-      let item = this.listeners[index];
+    for (const index in this.listeners) {
+      const item = this.listeners[index];
       item.element.removeEventListener(item.eventName, item.method);
     }
     // 销毁定时器
-    for (let index in this.intervals) {
+    for (const index in this.intervals) {
       clearInterval(this.intervals[index])
     }
   },
   methods: {
     down(e) {
-      this.is_click_bar = true;
+      this.isClickBar = true;
       //赋值高度备用
-      let full_height = this.dom_volume_full.clientHeight;
-      this.full_height = full_height;
-      this.$emit('updateVolume', 1 - e.offsetY / this.full_height)
+      const fullBarHeight = this.fullBarDom.clientHeight;
+      this.fullBarHeight = fullBarHeight;
+      this.$emit('updateVolume', 1 - e.offsetY / fullBarHeight)
     },
     move(e) {
       //满载的音量条相对于视口的高度
-      let full_bar_client_top = this.dom_volume_full.getBoundingClientRect().top;
-      this.full_bar_client_top = full_bar_client_top;
-      //当前点击位置距离视口的高度
-      let clickY = e.clientY;
+      const fullBarClientTop = this.fullBarDom.getBoundingClientRect().top;
+      this.fullBarClientTop = fullBarClientTop;
       //偏移量
-      let offsetY = clickY - full_bar_client_top;
+      const offsetY = e.clientY - fullBarClientTop;
       //当鼠标按下的时候才进行更新数据
-      if (this.is_click_bar ) {
-        let new_volume = 1 - (offsetY / this.full_height);
-        if (new_volume > 1) {
+      if (this.isClickBar ) {
+        const newVolume = 1 - (offsetY / this.fullBarHeight);
+        if (newVolume > 1) {
           this.$emit("updateVolume", 1)
-        } else if (new_volume < 0) {
+        } else if (newVolume < 0) {
           this.$emit("updateVolume", 0)
         } else {
-          this.$emit("updateVolume", new_volume)
+          this.$emit("updateVolume", newVolume)
         }
       }
     },
     up() {
-      this.is_click_bar = false;
+      this.isClickBar = false;
     },
   },
 };

@@ -1,8 +1,10 @@
 /**
   $emit: dragging(currentProgress) -> 按下或拖动进度条的过程中触发;
-         released(currentProgress) -> 松开/释放进度条时触发;
+         released(currentProgress) -> 松开进度条时触发;
   props: width, height,
          currentProgress, -> 当前进度，范围0-1
+         duration, -> 参考videoDom.duration
+         buffered, -> 参考videoDom.buffered
  */
 <template>
   <div
@@ -13,10 +15,15 @@
     @mouseup="up"
   >
     <div ref="progress-full" class="progress-full" :style="{height: height}">
-      <div class="progress-current" :style="{width: currentProgress * 100 + '%'}"></div>
+      <!-- 缓冲段 -->
+      <div class="progress-buffered" :style="{width: bufferedBarPercent + '%'}"></div>
+      <!-- 当前播放时间段 -->
+      <div class="progress-current" :style="{width: currentTimeRatio * 100 + '%'}"></div>
+      <!-- 游标 -->
       <span class="progress-cursor" :style="{left: cursorPercent + '%'}"></span>
+      <!-- 预览框 -->
       <span ref="preview" class="progress-preview" :style="{left: previewPostionLeft}">
-        <span class="preview-time">{{ preTimeLabel }}</span>
+        <span class="preview-time">{{ previewTimeLabel }}</span>
       </span>
     </div>
   </div>
@@ -34,40 +41,73 @@ export default {
       type: String,
       default: "3px",
     },
-    // 当前进度，范围0-1
-    currentProgress: {
+    // 当前播放进度
+    currentTime: {
       type: Number,
       default: 0,
+      required: true,
     },
-    videoDom: null,
+    // 视频全长，例如videoDom.duration
+    duration: {
+      type: Number,
+      default: 0,
+      require: true,
+    },
+    // 视频缓冲，参考videoDom.buffered
+    buffered: {
+      type: TimeRanges,
+      default: null,
+    }
   },
   computed: {
+    // 当前播放进度与总时长的占比
+    currentTimeRatio(){
+      return this.currentTime / this.duration;
+    },
+    // 预览时间的百分比位置
     previewPostionLeft() {
       if (this.isPreviewCenter) {
         return `${this.cursorPercent}%`;
       } else {
-        let offset = Math.floor(this.dom_preview.clientWidth / 2);
-        return this.cursorPercent > 50 ? `calc(100% - ${offset}px)` : `${offset}px`;
+        return this.cursorPercent > 50 ? `calc(100% - ${this.halfOfPreview}px)` : `${this.halfOfPreview}px`;
       }
+    },
+    // 预览框的一半大小
+    halfOfPreview() {
+      return Math.floor(this.previewDom.clientWidth / 2);
+    },
+    // 缓冲进度条百分比位置
+    bufferedBarPercent() {
+      // 遍历每一段缓存
+      for (let i = 0; i < this.buffered?.length; i++) {
+        // 该缓存段开始时间比当前时间还大，那么后面都不可能是了，跳出循环
+        if(this.buffered.start(i) > this.currentTime) {
+          break;
+        }
+        // 在该缓存段之内
+        if (this.currentTime < this.buffered.end(i)) {
+          return this.buffered.end(i) / this.duration * 100;
+        }
+      }
+      return this.currentTimeRatio * 100;
     }
   },
   data() {
     return {
-      isDragging: false, //是否处于拖动进度条过程中（未松开）
-      init_clientX: 0, //初始进度的偏移量，相对于视口
-      dom_full: null, //完整进度条的dom，即进度条背景
-      dom_preview: null,
+      isDragging: false, // 是否处于拖动进度条过程中（未松开）
       isPreviewCenter: true, // 游标的时间预览是否处于进度条中间的正常的不用处理的位置
+      fullBarDom: null, // 完整进度条的dom，即进度条背景
+      previewDom: null, // 预览框的dom
+      previewTimeLabel: "00:00", // 游标的时间预览文字
       cursorPercent: 0, // 鼠标悬浮时的游标所处的百分比位置
-      preTimeLabel: "00:00", // 游标的时间预览文字
       listeners: [], // 事件监听列表，列表项格式：{eventName: String, element: ELement, method: Function}
       intervals: [], // 定时器列表，列表项格式：Function
     };
   },
   mounted() {
     //初始化一些固定数据
-    this.dom_full = this.$refs["progress-full"];
-    this.dom_preview = this.$refs["preview"];
+    this.fullBarDom = this.$refs["progress-full"];
+    this.previewDom = this.$refs["preview"];
     //绑定全局监听器
     let move = {
       eventName: "mousemove",
@@ -103,32 +143,31 @@ export default {
     down(e) {
       this.isDragging = true;
       // 获取完整进度条的clientX（dom左上角）
-      let fullClientX = this.dom_full.getBoundingClientRect().left;
-      // 设置当前的播放进度（同时作用于当前进度条的样式）
-      let preCurrentProgress =
-        (e.clientX - fullClientX) / this.dom_full.clientWidth;
-      this.$emit("dragging", preCurrentProgress);
+      const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
+      // 预播放进度传给dragging事件
+      this.$emit("dragging", (e.clientX - fullBarClientX) / this.fullBarDom.clientWidth * this.duration);
     },
     move(e) {
-      let fullClientX = this.dom_full.getBoundingClientRect().left;
-      let preCurrentProgress = (e.clientX - fullClientX) / this.dom_full.clientWidth;
+      const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
+      const currentBarWidth = e.clientX - fullBarClientX;
+      // 预播放进度占比
+      const preCurrentTimeRatio = currentBarWidth / this.fullBarDom.clientWidth;
       if (this.isDragging) {
-        this.$emit("dragging", preCurrentProgress);
+        this.$emit("dragging", preCurrentTimeRatio * this.duration);
       }
-      this.cursorPercent = preCurrentProgress * 100;
-      this.preTimeLabel = this.secondTimeFormat(preCurrentProgress * this.videoDom.duration)
-      let cursorOffset = e.clientX - fullClientX - this.dom_preview.clientWidth / 2;
+      this.cursorPercent = preCurrentTimeRatio * 100;
+      this.previewTimeLabel = this.secondTimeFormat(preCurrentTimeRatio * this.duration)
+      let cursorOffset = e.clientX - fullBarClientX - this.halfOfPreview;
       /* 游标的时间预览处于正常位置不会触碰边缘的时候为True（即处于中间段）
        * 图示（进度条）：|_|____中间段____|_|
        */
-      this.isPreviewCenter = (cursorOffset > 0 && cursorOffset < this.dom_full.clientWidth - this.dom_preview.clientWidth);
+      this.isPreviewCenter = (cursorOffset > 0 && cursorOffset < this.fullBarDom.clientWidth - this.previewDom.clientWidth);
     },
     up(e) {
       if (this.isDragging) {
         this.isDragging = false;
-        let fullClientX = this.dom_full.getBoundingClientRect().left;
-        let preCurrentProgress = (e.clientX - fullClientX) / this.dom_full.clientWidth;
-        this.$emit("released", preCurrentProgress);
+        const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
+        this.$emit("released", (e.clientX - fullBarClientX) / this.fullBarDom.clientWidth * this.duration);
       }
     },
     /* 时间格式化，秒格式化成xx:xx:xx
@@ -187,13 +226,15 @@ export default {
   content: "";
   position: absolute;
   display: inline-block;
+  box-sizing: border-box;
   right: 0;
   top: 50%;
   bottom: 50%;
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: 100%;
-  background: #fff;
+  border: 2px solid #fff;
+  background: var(--primaryColor);
   -o-transform: translate(50%, -50%);
   -ms-transform: translate(50%, -50%);
   -moz-transform: translate(50%, -50%);
@@ -201,9 +242,19 @@ export default {
   transform: translate(50%, -50%);
   opacity: 0;
   transition: opacity 0.3s;
+  z-index: 1002;
 }
 .progress-bar:hover .progress-current::after {
   opacity: 1;
+}
+.progress-buffered {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: inherit;
+  width: 50%;
+  display: inline-block;
+  background-color: rgba(255,255,255,0.5);
 }
 .progress-cursor {
   opacity: 0;
@@ -221,6 +272,7 @@ export default {
   -webkit-transform: translate(-50%, 50%);
   transform: translate(-50%, 50%);
   transition: opacity.2s;
+  z-index: 1001;
 }
 .progress-bar:hover .progress-cursor,
 .progress-bar:hover .progress-preview {

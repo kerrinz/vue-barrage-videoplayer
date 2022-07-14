@@ -4,8 +4,9 @@
 Language: 简体中文 / [English](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/README_EN.md)
  
 ## 简介
-一个基于Vue的弹幕视频播放器组件。适用于PC版网页，且视频为静态资源视频。
-注：该组件为UI封装，并不涉及底层编解码。
+一个基于Vue的弹幕视频播放器组件，适用于PC版网页，且视频为静态资源视频。
+
+注：该组件为UI封装，并不涉及底层编解码。早期代码有点烂，勿喷，后续会慢慢进行改进。
 
 ## 预览
 - [点击跳转预览](https://yleen.cc/files/works/barrage-video-player/)

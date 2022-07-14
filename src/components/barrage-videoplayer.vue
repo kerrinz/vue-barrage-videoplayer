@@ -358,8 +358,7 @@ export default {
     let onprogress = {
       eventName: "progress",
       element: this.videoDom,
-      method: function(e) {
-        console.log(e)
+      method: function() {
         this.buffered = this.videoDom.buffered;
       }.bind(this),
     } // 视频加载下载过程中触发

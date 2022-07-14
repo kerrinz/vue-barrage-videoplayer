@@ -8,6 +8,7 @@
  */
 <template>
   <div
+    ref="progress-root"
     class="progress-bar"
     :style="{width: width}"
     @mousedown.left="down"
@@ -96,6 +97,7 @@ export default {
     return {
       isDragging: false, // 是否处于拖动进度条过程中（未松开）
       isPreviewCenter: true, // 游标的时间预览是否处于进度条中间的正常的不用处理的位置
+      rootBarDom: null, // 进度条根元素dom
       fullBarDom: null, // 完整进度条的dom，即进度条背景
       previewDom: null, // 预览框的dom
       previewTimeLabel: "00:00", // 游标的时间预览文字
@@ -106,14 +108,22 @@ export default {
   },
   mounted() {
     //初始化一些固定数据
+    this.rootBarDom = this.$refs["progress-root"];
     this.fullBarDom = this.$refs["progress-full"];
     this.previewDom = this.$refs["preview"];
-    //绑定全局监听器
-    let move = {
+    //绑定监听器
+    let inWindowMove = {
       eventName: "mousemove",
       element: window,
       method: function(e) {
         this.move(e);
+      }.bind(this),
+    }
+    let inRootbarMove = {
+      eventName: "mousemove",
+      element: this.rootBarDom,
+      method: function(e) {
+        this.onlyInRootBarDomMove(e);
       }.bind(this),
     }
     let up = {
@@ -123,9 +133,11 @@ export default {
         this.up(e);
       }.bind(this),
     }
-    this.listeners.push(move);
+    this.listeners.push(inWindowMove);
+    this.listeners.push(inRootbarMove);
     this.listeners.push(up);
-    window.addEventListener("mousemove", move.method, false);
+    window.addEventListener("mousemove", inWindowMove.method, false);
+    this.rootBarDom.addEventListener("mousemove", inRootbarMove.method, false);
     window.addEventListener("mouseup", up.method, false);
   },
   beforeDestroy() {
@@ -148,20 +160,13 @@ export default {
       this.$emit("dragging", (e.clientX - fullBarClientX) / this.fullBarDom.clientWidth * this.duration);
     },
     move(e) {
-      const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
-      const currentBarWidth = e.clientX - fullBarClientX;
-      // 预播放进度占比
-      const preCurrentTimeRatio = currentBarWidth / this.fullBarDom.clientWidth;
       if (this.isDragging) {
-        this.$emit("dragging", preCurrentTimeRatio * this.duration);
+        const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
+        const currentBarWidth = e.clientX - fullBarClientX;
+        // 预播放进度占比
+        const preCurrentTimeRatio = currentBarWidth / this.fullBarDom.clientWidth;
+          this.$emit("dragging", preCurrentTimeRatio * this.duration);
       }
-      this.cursorPercent = preCurrentTimeRatio * 100;
-      this.previewTimeLabel = this.secondTimeFormat(preCurrentTimeRatio * this.duration)
-      let cursorOffset = e.clientX - fullBarClientX - this.halfOfPreview;
-      /* 游标的时间预览处于正常位置不会触碰边缘的时候为True（即处于中间段）
-       * 图示（进度条）：|_|____中间段____|_|
-       */
-      this.isPreviewCenter = (cursorOffset > 0 && cursorOffset < this.fullBarDom.clientWidth - this.previewDom.clientWidth);
     },
     up(e) {
       if (this.isDragging) {
@@ -169,6 +174,20 @@ export default {
         const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
         this.$emit("released", (e.clientX - fullBarClientX) / this.fullBarDom.clientWidth * this.duration);
       }
+    },
+    // 仅在Rootbar内移动才触发
+    onlyInRootBarDomMove(e) {
+      const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
+      const currentBarWidth = e.clientX - fullBarClientX;
+      // 预播放进度占比
+      const preCurrentTimeRatio = currentBarWidth / this.fullBarDom.clientWidth;
+      this.cursorPercent = preCurrentTimeRatio * 100;
+      this.previewTimeLabel = this.secondTimeFormat(preCurrentTimeRatio * this.duration)
+      let cursorOffset = e.clientX - fullBarClientX - this.halfOfPreview;
+      /* 游标的时间预览处于正常位置不会触碰边缘的时候为True（即处于中间段）
+       * 图示（进度条）：|_|____中间段____|_|
+       */
+      this.isPreviewCenter = (cursorOffset > 0 && cursorOffset < this.fullBarDom.clientWidth - this.previewDom.clientWidth);
     },
     /* 时间格式化，秒格式化成xx:xx:xx
      */

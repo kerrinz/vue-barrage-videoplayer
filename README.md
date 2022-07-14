@@ -37,7 +37,9 @@ Language: 简体中文 / [English](https://github.com/yleencc/vue-barrage-videop
 
 ## 使用方式与示例
 注意：前往[releases](https://github.com/yleencc/vue-barrage-videoplayer/releases)下载最新版本，且项目需要引入`axios`
+
 示例代码文件：[preview-videoplayer.vue](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/src/views/preview-simple.vue) 
+
 引入方式：
 1. 将`src/components`下的四个文件复制到你的项目里，确保这四个文件保持在同一目录；
 2. 将`src/assets`文件夹复制到项目`src/`里面，确保`/src/assets/images/loading.svg`存在（该文件为缓冲时的加载图标）

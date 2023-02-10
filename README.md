@@ -1,12 +1,15 @@
 # vue弹幕视频播放器
-[![GitHub stars](https://img.shields.io/github/stars/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/stargazers) [![GitHub forks](https://img.shields.io/github/forks/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/network) [![GitHub release](https://img.shields.io/github/v/release/yleencc/vue-barrage-videoplayer?include_prereleases)](https://github.com/yleencc/vue-barrage-videoplayer/releases) [![GitHub license](https://img.shields.io/github/license/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/LICENSE)
+[![GitHub stars](https://img.shields.io/github/stars/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/network)
+[![GitHub release](https://img.shields.io/github/v/release/yleencc/vue-barrage-videoplayer?include_prereleases)](https://github.com/yleencc/vue-barrage-videoplayer/releases)
+[![GitHub license](https://img.shields.io/github/license/yleencc/vue-barrage-videoplayer)](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/LICENSE)
 
 Language: 简体中文 / [English](https://github.com/yleencc/vue-barrage-videoplayer/blob/master/README_EN.md)
  
 ## 简介
-一个基于Vue的弹幕视频播放器组件，适用于PC版网页，且视频为静态资源视频。
+一个基于Vue 2.0的弹幕视频播放器组件，适用于PC版网页，且视频为静态资源视频。
 
-注：该组件为UI封装，并不涉及底层编解码。早期代码有点烂，勿喷，后续会慢慢进行改进。
+注：该组件为UI封装，并不涉及底层编解码，而且早期代码有点烂。
 
 ## 预览
 - [点击跳转预览](https://yleen.cc/files/works/barrage-video-player/)
@@ -28,6 +31,7 @@ Language: 简体中文 / [English](https://github.com/yleencc/vue-barrage-videop
 - [X] 多播放器共存
 - [X] 弹幕显示
 - [X] 网页全屏
+- [ ] 更新到Vue 3.0
 - [ ] 弹幕设置
 - [ ] 封装成易于导入的库
 - [ ] 右键查看视频数据
@@ -80,8 +84,7 @@ export default {
 
 
 ### bug反馈
-- 提[issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)
-- 或者本人首页的联系方式，不急的话邮箱优先
+- [issue](https://github.com/yleencc/vue-barrage-videoplayer/issues)
 
 ### 引用
 - vue、axios、mpegts.js

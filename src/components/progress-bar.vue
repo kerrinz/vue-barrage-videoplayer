@@ -12,8 +12,6 @@
     class="progress-bar"
     :style="{width: width}"
     @mousedown.left="down"
-    @mousemove="move"
-    @mouseup="up"
   >
     <div ref="progress-full" class="progress-full" :style="{height: height}">
       <!-- 缓冲段 -->
@@ -119,14 +117,7 @@ export default {
         this.move(e);
       }.bind(this),
     }
-    let inRootbarMove = {
-      eventName: "mousemove",
-      element: this.rootBarDom,
-      method: function(e) {
-        this.onlyInRootBarDomMove(e);
-      }.bind(this),
-    }
-    let up = {
+    let inWindowUp = {
       eventName: "mouseup",
       element: window,
       method: function(e) {
@@ -134,11 +125,9 @@ export default {
       }.bind(this),
     }
     this.listeners.push(inWindowMove);
-    this.listeners.push(inRootbarMove);
-    this.listeners.push(up);
+    this.listeners.push(inWindowUp);
     window.addEventListener("mousemove", inWindowMove.method, false);
-    this.rootBarDom.addEventListener("mousemove", inRootbarMove.method, false);
-    window.addEventListener("mouseup", up.method, false);
+    window.addEventListener("mouseup", inWindowUp.method, false);
   },
   beforeDestroy() {
     // 销毁事件监听器
@@ -161,26 +150,21 @@ export default {
     },
     move(e) {
       if (this.isDragging) {
-        const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
-        const currentBarWidth = e.clientX - fullBarClientX;
-        // 预播放进度占比
-        const preCurrentTimeRatio = currentBarWidth / this.fullBarDom.clientWidth;
-          this.$emit("dragging", preCurrentTimeRatio * this.duration);
+        this.$emit("dragging", this.filterProgressRadio(e.clientX) * this.duration);
       }
+      this.onlyInRootBarDomMove(e);
     },
     up(e) {
       if (this.isDragging) {
         this.isDragging = false;
-        const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
-        this.$emit("released", (e.clientX - fullBarClientX) / this.fullBarDom.clientWidth * this.duration);
+        this.$emit("released", this.filterProgressRadio(e.clientX) * this.duration);
       }
     },
     // 仅在Rootbar内移动才触发
     onlyInRootBarDomMove(e) {
       const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
-      const currentBarWidth = e.clientX - fullBarClientX;
       // 预播放进度占比
-      const preCurrentTimeRatio = currentBarWidth / this.fullBarDom.clientWidth;
+      const preCurrentTimeRatio = this.filterProgressRadio(e.clientX);
       this.cursorPercent = preCurrentTimeRatio * 100;
       this.previewTimeLabel = this.secondTimeFormat(preCurrentTimeRatio * this.duration)
       let cursorOffset = e.clientX - fullBarClientX - this.halfOfPreview;
@@ -210,6 +194,23 @@ export default {
       else
         return `${h}:${m}:${s}`;
     },
+    /**
+     * 过滤进度比率
+     * - mouseClientX: 当前鼠标位置的clientX
+    */
+    filterProgressRadio(mouseClientX) {
+      const fullBarClientX = this.fullBarDom.getBoundingClientRect().left;
+      const currentBarWidth = mouseClientX - fullBarClientX;
+      let preProgressRatio;
+      if (currentBarWidth < 0) {
+        preProgressRatio = 0;
+      } else if (currentBarWidth > this.fullBarDom.clientWidth) {
+        preProgressRatio = 1;
+      } else {
+        preProgressRatio = currentBarWidth / this.fullBarDom.clientWidth;
+      }
+      return preProgressRatio;
+    }
   },
 };
 </script>
